@@ -1,6 +1,7 @@
 import React, {useCallback, useState} from 'react';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
-import {StyleSheet, Text, View, Alert, TextInput, TouchableOpacity, Dimensions} from 'react-native';
+import firestore from '@react-native-firebase/firestore';
+import {StyleSheet, Text, View, Alert, TextInput, TouchableOpacity, ActivityIndicator, Dimensions} from 'react-native';
 import auth from '@react-native-firebase/auth';
 
 export default function Signup({navigation}){
@@ -9,16 +10,13 @@ export default function Signup({navigation}){
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const {width, height} = Dimensions.get("window")
-
+  const [loading, setLoading] = useState(false);
   // state values for toggable visibility of features in the UI
   const [passwordHidden, setPasswordHidden] = useState(true);
 
   const signup = useCallback(async () => {
-    auth()
+    const userCreds = await auth()
     .createUserWithEmailAndPassword(email, password)
-    .then(() => {
-      console.log('User account created & signed in!');
-    })
     .catch(error => {
       if (error.code === 'auth/email-already-in-use') {
         console.log('That email address is already in use!');
@@ -30,13 +28,26 @@ export default function Signup({navigation}){
 
       console.error(error);
     });
+    Promise.allSettled([
+      userCreds.user.updateProfile({displayName: name}),
+      firestore().collection('users')
+      .add({
+        uid: userCreds.user.uid,
+        phoneNumber: phone,
+        isAdmin:false
+      })
+    ]).then((values) => {
+      console.log(values);
+    });	
 }, [email, password]);
 
   // onPressSignUp() registers the user and then calls signIn to log the user in
   const onPressSignUp = useCallback(async () => {
     try {
       // await app.emailPasswordAuth.registerUser({email, password});
+      setLoading(true)
       await signup();
+      setLoading(false)
     } catch (error) {
       Alert.alert(`Failed to sign up: ${error?.message}`);
     }
@@ -73,22 +84,15 @@ export default function Signup({navigation}){
           onChangeText={setPassword}
           secureTextEntry={passwordHidden}
           style={styles.input}
-          // rightIcon={
-          //   <Icon
-          //     type="material-community"
-          //     name={passwordHidden ? 'eye-off-outline' : 'eye-outline'}
-          //     size={12}
-          //     color="black"
-          //     onPress={() => setPasswordHidden(!passwordHidden)}
-          //     tvParallaxProperties={undefined}
-          //   />
-          // }
         />
         <TouchableOpacity
           style={styles.mainButton}
           onPress={onPressSignUp}
         >
-          <Text style={styles.buttonText}>Sign Up</Text>
+          {loading ? 
+            <ActivityIndicator color={"#000"} size={'large'} style={{marginVertical:"1%"}}/>:
+            <Text style={styles.buttonText}>Sign Up</Text>
+          }
         </TouchableOpacity>
         <View style={{flexDirection:"row", position:"absolute", top:height, left:width*0.25}}>
             <Text>Already have an account? </Text>

@@ -35,7 +35,7 @@ const Settings = ({ navigation, route }) => {
 							i18n.changeLanguage(currentLang.code);
 						}}
 						style={{
-							color: selectedLanguage ? DefaultTheme.colors.primary : '#000000',
+							color: selectedLanguage ? "#96BCA9" : '#000000',
 							padding: 10,
 							fontSize: 18,
 							fontWeight: selectedLanguage ? 'bold' : 'normal',

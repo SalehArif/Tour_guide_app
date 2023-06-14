@@ -13,6 +13,9 @@ import auth from '@react-native-firebase/auth';
 // Components
 import Main from './src/screens/Main';
 import LoginNavigation from './src/navigation/LoginNavigation';
+import TabNav from './src/navigation/Tabs';
+import TopTab from './src/navigation/TopTab';
+import AdminTabNav from './src/navigation/AdminTabs';
 
 const Stack = createStackNavigator();
 
@@ -40,8 +43,13 @@ const App = () => {
      );
    }
  
+   // <UserNavigation/>
+  //  <TabNav />
    return (
-    <UserNavigation/>
+     <NavigationContainer>
+        <StatusBar barStyle={"dark-content"} backgroundColor={"#f2f2f2"}/>
+        <AdminTabNav/>
+    </NavigationContainer>
    );
 };
 
@@ -55,12 +63,10 @@ const LoadingIndicator = () => {
  
 function UserNavigation(){
   return (
-      <NavigationContainer>
-        <StatusBar barStyle={"dark-content"} backgroundColor={"#f2f2f2"}/>
-        <Stack.Navigator initialRouteName='Main' screenOptions={{headerShown:false}}>
-          <Stack.Screen name="Main" component={Main} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <Stack.Navigator initialRouteName='Main' screenOptions={{headerShown:false}}>
+        <Stack.Screen name="Main" component={Main} />
+      </Stack.Navigator>
+      
   );
 }
 
