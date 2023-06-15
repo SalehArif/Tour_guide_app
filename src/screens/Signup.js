@@ -61,24 +61,28 @@ export default function Signup({navigation}){
         Welcome! Please enter your Name, email and password to create your account.
         </Text>
         <TextInput
+          value={name}
           placeholder="Full Name"
           placeholderTextColor={"#828F9C"}
           onChangeText={setName}
           style={styles.input}
         />
         <TextInput
+          value={email}
           placeholder="Email Address"
           placeholderTextColor={"#828F9C"}
           onChangeText={setEmail}
           style={styles.input}
         />
         <TextInput
+          value={phone}
           placeholder="Phone number"
           placeholderTextColor={"#828F9C"}
           onChangeText={setPhone}
           style={styles.input}
         />
         <TextInput
+          value={password}
           placeholder="Your Password"
           placeholderTextColor={"#828F9C"}
           onChangeText={setPassword}

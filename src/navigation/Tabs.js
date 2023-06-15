@@ -9,6 +9,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Main from '../screens/Main';
 import Settings from '../screens/Settings';
 import TopTabs from './TopTab';
+import { verticalScale } from '../helpers/Metrics';
+
 const Tab = createBottomTabNavigator();
 
 export default function TabNav() {
@@ -17,7 +19,7 @@ export default function TabNav() {
     initialRouteName='Home'
     screenOptions={{
         tabBarShowLabel:false,
-        tabBarStyle:[{height:70, justifyContent:"center" }],
+        tabBarStyle:[{height:verticalScale(60), justifyContent:"center" }],
         headerShown:false
     }}
     backBehavior='history'
@@ -26,7 +28,7 @@ export default function TabNav() {
         tabBarIcon:({focused, size}) => (
             <View>
                 <MaterialIcons name='home-filled' size={size} color={ focused ? "#72F8B6":"#DADCE0"} />
-                <Entypo name='dot-single' size={size} color={ focused ? "#72F8B6":"#fff"} />
+                
             </View>
         )
     }}/>
@@ -34,8 +36,8 @@ export default function TabNav() {
         options={{
             tabBarIcon:({focused, size}) => (
                 <View>
-                    <AntDesign name='search1' size={size} color={ focused ? "#72F8B6":"#DADCE0"} />
-                    <Entypo name='dot-single' size={size} color={ focused ? "#72F8B6":"#fff"} />
+                    <AntDesign name='hearto' size={size} color={ focused ? "#72F8B6":"#DADCE0"} />
+                    
                 </View>
             ),
         }}/>
@@ -44,7 +46,7 @@ export default function TabNav() {
             tabBarIcon:({focused, size}) => (
                 <View>
                     <Octicons name='bell' size={size} color={ focused ? "#72F8B6":"#DADCE0"} />
-                    <Entypo name='dot-single' size={size} color={ focused ? "#72F8B6":"#fff"} />
+                    
                 </View>
             ),
         }}/>
@@ -53,7 +55,7 @@ export default function TabNav() {
             tabBarIcon:({focused, size}) => (
                 <View>
                     <FontAwesome name='user-o' size={size} color={ focused ? "#72F8B6":"#DADCE0"} />
-                    <Entypo name='dot-single' size={size} color={ focused ? "#72F8B6":"#fff"} />
+                    
                 </View>
             ),
         }}/>

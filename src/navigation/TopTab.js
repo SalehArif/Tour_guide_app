@@ -21,7 +21,7 @@ export default function TopTabs() {
         <View style={{flexDirection:"row", alignItems:"center",}}>
           <Ionicons name='md-menu' size={28} color={"#2D302E"}/>
           <View style={{justifyContent:"center", marginHorizontal:"10%"}}>
-            <Text style={[styles.title,{fontSize:20, paddingHorizontal:0}]}>Howday{`, ${user?.displayName.split(" ")[0]}!`}</Text>
+            <Text style={[styles.title,{fontSize:20, paddingHorizontal:0}]}>Howday{user?.displayName ? `, ${user?.displayName?.split(" ")[0]}!`:""}</Text>
             <View style={{flexDirection:"row", alignItems:"center",}}>
               <Ionicons name='location-sharp' size={16} color={"red"} />
               <Text style={[styles.subtitle, {color:"red", paddingHorizontal:0, marginBottom:0}]}>Current Location</Text>

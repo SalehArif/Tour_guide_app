@@ -1,19 +1,23 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Image, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Image, ScrollView, StatusBar, Modal, ToastAndroid } from 'react-native'
 import React from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { useTranslation } from 'react-i18next'
-import { horizontalScale, verticalScale } from '../helpers/Metrics'
+import { horizontalScale, moderateScale, verticalScale } from '../helpers/Metrics'
 import {launchImageLibrary} from 'react-native-image-picker';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { ActivityIndicator } from 'react-native-paper';
+import { API_KEY } from "@env"
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
-const AddCity = () => {
+const AddCity = ({navigation}) => {
 	const {t} = useTranslation();
 	const [city, setCity] = React.useState("");
 	const [description, setDescription] = React.useState("");
 	const [image, setImage] = React.useState()
-	
+	const [loading, setLoading] = React.useState(false)
+
 	const chooseImage = async ()=>{
 		const result = await launchImageLibrary({includeBase64:true, mediaType:"photo", quality:0.5});
 		if(result.assets){
@@ -22,36 +26,76 @@ const AddCity = () => {
 	}
 
 	const addCityToDB = async ()=>{
-		await firestore().collection("tour").add({
-			image:image.base64,
-			imageType:image.type,
+		setLoading(true)
+		const obj = {
+			image:`data:image/${image.type};base64,${image.base64}`,
 			city:city,
-			description:description
-		})
+			description:description,
+			addedBy: auth().currentUser.uid
+		}
+		try {
+			await firestore().collection("cities").add(obj)
+			resetFields();
+			ToastAndroid.showWithGravity("City Added Succesfully", ToastAndroid.SHORT, ToastAndroid.BOTTOM)	
+		} catch (error) {
+			console.log(error)
+			ToastAndroid.showWithGravity("City couldn't be added", ToastAndroid.SHORT, ToastAndroid.BOTTOM)
+			
+		}
+		setLoading(false)
 	}
+
+	const resetFields = ()=>{
+		setCity("")
+		setDescription("")
+		setImage(null)
+	  }
 
   return (
     <View style={styles.viewWrapper}>
-			<ScrollView>
-      <Text style={styles.subtitle}>{t("common:add_city_subtitle")}</Text>
+		<StatusBar barStyle={"dark-content"} backgroundColor={loading ? "#0007":"#f2f2f2"}/>
+		{/* <ScrollView> */}
+			<Text style={styles.subtitle}>{t("common:add_city_subtitle")}</Text>
 			<TouchableOpacity onPress={chooseImage} 
-			style={{alignItems:"center" ,backgroundColor:"#F0F4F4", borderColor:"white", borderWidth:2, borderRadius:10, padding:image? 0:"20%"}}>
+			style={{alignItems:"center" ,backgroundColor:"#F0F4F4", borderColor:"white", borderWidth:2, borderRadius:10, padding:image? 0:"16%"}}>
 			{ image ? 
-					<Image source={{uri:`data:image/${image.type};base64,${image.base64}`}} resizeMode={"contain"} style={{width:horizontalScale(330), height:verticalScale(250), borderRadius:10}} />:
+					<Image source={{uri:`data:image/${image.type};base64,${image.base64}`}} resizeMode={"stretch"} style={{width:horizontalScale(330), height:verticalScale(190), borderRadius:10}} />:
 					<>
 						<MaterialCommunityIcons name='file-image' size={30} color={"#333"}/>
-						<Text >{t("common:pic_upload")}</Text>
+						<Text style={{marginTop:"8%"}} >{t("common:pic_upload")}</Text>
 					</>
 			}
 			</TouchableOpacity>
 			<View style={{flexDirection:"row", alignItems:"center", marginHorizontal:"5%", marginVertical:"4%"}}>
 				<Ionicons name='location-sharp' size={22} color={"red"} />
-				<TextInput
+				{/* <TextInput
 					value={city}
 					placeholder='Search and chose the city'
 					onChangeText={setCity}
 					placeholderTextColor={"#616163"}
 					style={{backgroundColor:"white", borderWidth:1, borderRadius:25, borderColor:"#DBDBDB", width:"95%", marginHorizontal:"2%" ,paddingLeft:"6%",}}
+				/> */}
+				<GooglePlacesAutocomplete
+					placeholder='Search and chose the city'
+					onPress={(data, details = null) => {
+					// 'details' is provided when fetchDetails = true
+					if(data.matched_substrings[0].length == 3)
+						setCity(data.terms[0].value+" "+data.terms[2].value)
+					else if(data.matched_substrings[0].length == 2)
+						setCity(data.terms[0].value+" "+data.terms[1].value)
+					else
+						setCity(data.terms[0].value)
+					console.log(data);
+					}}
+					query={{
+					key: API_KEY,
+					language: 'en',
+					}}
+					styles={{
+					textInputContainer:{
+						backgroundColor:"white", borderWidth:1, borderRadius:50, borderColor:"#DBDBDB", paddingVertical:"1%",marginHorizontal:"2%" ,paddingHorizontal:"4%",
+					},
+					}}
 				/>
 			</View>
 			<TextInput
@@ -60,12 +104,25 @@ const AddCity = () => {
 				onChangeText={setDescription}
 				placeholder='Write place description here. . .'
 				textAlignVertical="top"
-				style={{backgroundColor:"#F0F4F4", marginHorizontal:"4%", marginVertical:"2%",borderColor:"white", borderWidth:2,paddingLeft:"4%", borderRadius:20, height:verticalScale(150)}}
+				style={{backgroundColor:"#F0F4F4", marginHorizontal:"4%", marginVertical:"2%",borderColor:"white", borderWidth:2,paddingLeft:"6%", paddingTop:"6%", borderRadius:20, height:verticalScale(150)}}
 			/>
-			<TouchableOpacity style={styles.mainButton}>
+			<TouchableOpacity style={styles.mainButton} onPress={()=>{navigation.navigate("PreviewAddedCity", { city: 
+				{image:image.base64,imageType:image.type,city:city,description:description}, addCityToDB }); }}>
 				<Text style={styles.buttonText}>Add the City</Text>
 			</TouchableOpacity>
-			</ScrollView>
+			{/* </ScrollView> */}
+			<Modal
+				visible={loading}
+				animationType="slide"
+				transparent={true}
+				style={{backgroundColor:"#0007", alignItems:"center"}}
+			>
+				<View style={styles.centeredView}>
+					<View style={styles.modalView}>
+						<ActivityIndicator size={moderateScale(100)} color={"#fff"} />
+					</View>
+				</View>
+			</Modal>
     </View>
   )
 }
@@ -97,4 +154,19 @@ const styles = StyleSheet.create({
     color: "#101018",
     marginVertical:"2%"
 },
+centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor:"#0007",
+    // marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: null,
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    
+  }
 })

@@ -50,7 +50,7 @@ const Main = ({navigation}) => {
         </View>
         { user?.photoURL ? 
         <Image source={{uri:user.photoURL}} style={{width:50, height:50, borderRadius:50, borderColor:"#96BCA9", borderWidth:2}} /> :
-        <Image source={require('../assets/User.png')} style={{width:50, height:50}} />
+        <Image source={require('../assets/user_icon.png')} style={{width:50, height:50}} />
          }
       </View>
       <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between", backgroundColor:"white" ,borderWidth:1, borderColor:"#ccc", borderRadius:50,marginVertical:"3%", paddingLeft:"6%", paddingVertical:"2%"}}>

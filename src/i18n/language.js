@@ -1,4 +1,4 @@
 export default {
 	english: 'English',
-	arabic: 'عربي',
+	arabic: 'Arabic',
 };
