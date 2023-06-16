@@ -8,7 +8,7 @@ import { horizontalScale } from '../helpers/Metrics';
 const Tab = createMaterialTopTabNavigator();
 import auth from '@react-native-firebase/auth';
 
-export default function TopTabs() {
+export default function AdminTopTabs() {
   const [user, setuser] = useState();
 
   useEffect(()=>{

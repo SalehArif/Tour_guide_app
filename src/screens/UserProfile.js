@@ -3,9 +3,10 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
 import auth from '@react-native-firebase/auth';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import { horizontalScale, moderateScale, verticalScale } from '../helpers/Metrics';
 
-const Profile = ({navigation}) => {
+const UserProfile = ({navigation}) => {
 	const [user, setUser] = React.useState(auth().currentUser)
   const [image, setImage] = React.useState(user.photoURL)
 
@@ -29,15 +30,25 @@ const Profile = ({navigation}) => {
 					<Text style={[styles.subtitle, {color:"red", paddingHorizontal:0, marginBottom:0}]}>Current Location</Text>
 				</View>
 			</View>
-				<TouchableOpacity style={styles.mainButton} onPress={()=>navigation.navigate("EditProfile")}>
+				<TouchableOpacity style={styles.mainButton1} onPress={()=>navigation.navigate("EditProfile")}>
 					<MaterialCommunityIcons name='account-edit' size={20} />
-					<Text style={styles.buttonText}>Edit Profile</Text>
+					<Text style={styles.buttonText1}>Edit Profile</Text>
 				</TouchableOpacity>
+        <View style={{marginTop:"12%"}}>
+          <TouchableOpacity style={styles.mainButton} onPress={()=>navigation.navigate("AddSchedule")}>
+            <Text style={styles.buttonText}>Add Schedule</Text>
+            <FontAwesome name='angle-double-right' size={25} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.mainButton} onPress={()=>navigation.navigate("MySchedules")}>
+            <Text style={styles.buttonText}>See My Schedules</Text>
+            <FontAwesome name='angle-double-right' size={25} />
+          </TouchableOpacity>
+        </View>
     </View>
   )
 }
 
-export default Profile
+export default UserProfile
 
 const styles = StyleSheet.create({
 	viewWrapper: {
@@ -57,11 +68,11 @@ const styles = StyleSheet.create({
     paddingHorizontal:"4%",
     marginBottom:"3%"
   },
-	mainButton: {
+	mainButton1: {
     backgroundColor:"#EAEAEA", borderRadius:30, marginHorizontal:"20%",
     marginTop:"4%", paddingVertical:"2%", flexDirection:"row", alignItems:"center", justifyContent:"center"
   },
-  buttonText:{
+  buttonText1:{
     fontFamily: 'DM Sans',
     fontStyle: "normal",
     fontWeight: 700,
@@ -71,5 +82,18 @@ const styles = StyleSheet.create({
     color: "#101018",
     marginVertical:"2%",
 		marginLeft:"2%"
+},mainButton: {
+  borderWidth:1, borderColor:"#3CDD8E", backgroundColor:"#72F8B6", borderRadius:50, marginHorizontal:"8%",
+  marginTop:"6%", paddingVertical:"6%", flexDirection:"row", alignItems:"center", justifyContent:"space-around"
+},
+buttonText:{
+  fontFamily: 'DM Sans',
+  fontStyle: "normal",
+  fontWeight: 700,
+  fontSize: 16,
+  lineHeight: 33,
+  textAlign: "center",
+  color: "#101018",
+  marginVertical:"2%"
 },
 })

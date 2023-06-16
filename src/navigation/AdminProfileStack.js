@@ -6,7 +6,7 @@ import Settings from '../screens/Settings';
 
 const Stack = createStackNavigator();
 
-const ProfileStack = () => {
+const AdminProfileStack = () => {
   return (
     <Stack.Navigator initialRouteName='Profile' screenOptions={{headerShown:false}}>
         <Stack.Screen name="Profile" component={Profile} />
@@ -16,4 +16,4 @@ const ProfileStack = () => {
   )
 }
 
-export default ProfileStack
+export default AdminProfileStack

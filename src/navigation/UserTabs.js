@@ -1,23 +1,20 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from "@react-navigation/native";
 import { View } from 'react-native';
-import Entypo from 'react-native-vector-icons/Entypo'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import AntDesign from 'react-native-vector-icons/AntDesign'
-import Octicons from 'react-native-vector-icons/Octicons'
 import Fontisto from 'react-native-vector-icons/Fontisto'
+import AntDesign from 'react-native-vector-icons/AntDesign'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import UserLandingPage from '../screens/UserLandingPage';
 import Settings from '../screens/Settings';
 import AdminTopTabs from './AdminTopTabs';
-import AdminStack from './AdminStack';
-import AdminProfileStack from './AdminProfileStack';
 import { verticalScale } from '../helpers/Metrics';
-import SearchStack from './SearchStack';
+import AdminProfileStack from './AdminProfileStack';
+import UserStack from './UserStack';
+import UserProfileStack from './UserProfileStack';
+
 const Tab = createBottomTabNavigator();
 
-export default function TabNav() {
+export default function UserTabs() {
   return (
     <Tab.Navigator
     initialRouteName='Home'
@@ -28,7 +25,7 @@ export default function TabNav() {
     }}
     backBehavior='history'
     >
-        <Tab.Screen name="Home" component={AdminStack} options={{
+        <Tab.Screen name="Home" component={UserStack} options={{
         tabBarIcon:({focused, size}) => (
             <View>
                 {
@@ -36,15 +33,18 @@ export default function TabNav() {
                     <MaterialCommunityIcons name='home' size={size} color={"#72F8B6"} />:
                     <MaterialCommunityIcons name='home-outline' size={size} color={"#DADCE0"} />
                 }
-                
             </View>
         )
     }}/>
-        <Tab.Screen name="SearchStack" component={SearchStack} 
+        <Tab.Screen name="Settings" component={Settings} 
         options={{
             tabBarIcon:({focused, size}) => (
                 <View>
-                    <AntDesign name='search1' size={size} color={ focused ? "#72F8B6":"#DADCE0"} />
+                    {
+                        focused ?
+                        <AntDesign name='heart' size={size} color={"#72F8B6"} />:
+                        <AntDesign name='hearto' size={size} color={"#DADCE0"} />
+                    }
                     
                 </View>
             ),
@@ -58,20 +58,18 @@ export default function TabNav() {
                         <Fontisto name='bell-alt' size={size} color={"#72F8B6"} />:
                         <Fontisto name='bell' size={size} color={"#DADCE0"} />
                     }
-                    
                 </View>
             ),
         }}/>
-        <Tab.Screen name="ProfileStack" component={AdminProfileStack} 
+        <Tab.Screen name="ProfileStack" component={UserProfileStack} 
         options={{
             tabBarIcon:({focused, size}) => (
                 <View>
-                    {
+                     {
                         focused ?
                         <FontAwesome name='user' size={size} color={"#72F8B6"} />:
                         <FontAwesome name='user-o' size={size} color={"#DADCE0"} />
                     }
-                    
                 </View>
             ),
         }}/>

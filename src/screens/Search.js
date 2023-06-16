@@ -16,6 +16,7 @@ const Search = ({navigation}) => {
 			// console.log('Total users: ', querySnapshot.size);
 			let docs = []
 			querySnapshot.forEach(documentSnapshot => {
+				documentSnapshot.data().id = documentSnapshot.id
 				docs.push(documentSnapshot.data())
 				// console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
 			});

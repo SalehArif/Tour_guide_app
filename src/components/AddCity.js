@@ -39,7 +39,7 @@ const AddCity = ({navigation}) => {
 			ToastAndroid.showWithGravity("City Added Succesfully", ToastAndroid.SHORT, ToastAndroid.BOTTOM)	
 		} catch (error) {
 			console.log(error)
-			ToastAndroid.showWithGravity("City couldn't be added", ToastAndroid.SHORT, ToastAndroid.BOTTOM)
+			ToastAndroid.showWithGravity("City couldn't be added. You may have to select a different image", ToastAndroid.SHORT, ToastAndroid.LONG)
 			
 		}
 		setLoading(false)
@@ -79,9 +79,9 @@ const AddCity = ({navigation}) => {
 					placeholder='Search and chose the city'
 					onPress={(data, details = null) => {
 					// 'details' is provided when fetchDetails = true
-					if(data.matched_substrings[0].length == 3)
+					if(data.terms.length == 3)
 						setCity(data.terms[0].value+" "+data.terms[2].value)
-					else if(data.matched_substrings[0].length == 2)
+					else if(data.terms.length == 2)
 						setCity(data.terms[0].value+" "+data.terms[1].value)
 					else
 						setCity(data.terms[0].value)
