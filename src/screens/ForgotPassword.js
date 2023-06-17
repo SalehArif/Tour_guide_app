@@ -2,22 +2,24 @@ import React, {useCallback, useState} from 'react';
 import {StyleSheet, Text, View, Alert, TextInput, Image,ToastAndroid, TouchableOpacity, Dimensions} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import { useTranslation } from 'react-i18next';
 
 const ForgotPassword = ({navigation}) => {
   const [email, setEmail] = useState('');
   const {width, height} = Dimensions.get("window")
+  const { t } = useTranslation()
 
   return (
     <View style={styles.viewWrapper}>
       <TouchableOpacity onPress={()=>navigation.goBack()} >
         <Ionicons name='chevron-back' size={24} style={{borderRadius:50, borderWidth:1, borderColor:"#E2E2E2", backgroundColor:"white", marginLeft:"2%", padding:"1%", alignSelf:"flex-start"}} />
       </TouchableOpacity>
-      <Text style={styles.title}>Forgot Password?</Text>
+      <Text style={styles.title}>{t("common:ForgotPassword")}</Text>
       <Text style={styles.subtitle}>
-      Don't worry! It happens. Please enter the email associated with your account.
+      {t("common:ForgotPasswordSub")}
       </Text>
       <TextInput
-        placeholder="Enter Your Email"
+        placeholder={t("common:EnterEmail")}
         placeholderTextColor={"#828F9C"}
         onChangeText={setEmail}
         style={styles.input}
@@ -26,14 +28,14 @@ const ForgotPassword = ({navigation}) => {
         style={styles.mainButton}
         onPress={ async ()=>{ await auth().sendPasswordResetEmail(email);navigation.navigate("ResetSuccess")}}
       >
-        <Text style={styles.buttonText}>Send Email</Text>
+        <Text style={styles.buttonText}>{t("common:SendEmail")}</Text>
       </TouchableOpacity>
       <View style={{flexDirection:"row", position:"absolute", top:height, left:width*0.3}}>
-        <Text>Remember password? </Text>
+        <Text>{t("common:Rememberpassword")}</Text>
         <TouchableOpacity
           onPress={() => navigation.navigate("Login")}
         >
-          <Text style={styles.secondaryButton}>Login</Text>
+          <Text style={styles.secondaryButton}>{t("common:login")}</Text>
         </TouchableOpacity>
       </View>
     </View>

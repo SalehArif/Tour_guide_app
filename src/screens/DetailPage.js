@@ -5,17 +5,19 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import { horizontalScale, verticalScale } from '../helpers/Metrics'
 import auth from '@react-native-firebase/auth'
 import firestore from '@react-native-firebase/firestore'
+import { useTranslation } from 'react-i18next';
 
 const DetailPage = ({navigation, route}) => {
   const [city, setCity] = React.useState(route.params.city)
   const [favorited, setFavorite] = React.useState(false)
+  const { t } = useTranslation()
 
   const addFavorite = async ()=>{
     try {
       await firestore().collection('favorites').add({
         user: auth().currentUser.uid,
         favorite: city.id,
-        type:"city"
+        type:"City"
       })
       setFavorite(true)
       ToastAndroid.showWithGravity("Favorite added", ToastAndroid.SHORT, ToastAndroid.BOTTOM)
@@ -46,11 +48,11 @@ const DetailPage = ({navigation, route}) => {
 				<TouchableOpacity onPress={()=>navigation.goBack()} >
 					<Ionicons name='chevron-back' size={24} style={{borderRadius:50, borderWidth:1, borderColor:"#E2E2E2", backgroundColor:"white", marginLeft:"2%", padding:"1%", alignSelf:"flex-start"}} />
 				</TouchableOpacity>
-				<Text style={[styles.title,{ marginLeft:"20%",fontSize:20}]}>Detail Page</Text>
+				<Text style={[styles.title,{ marginLeft:"20%",fontSize:20}]}>{t("common:DetailPage")}</Text>
 			</View>
       <View>
-        <Image source={{uri:city.image}} style={{width:horizontalScale(310), height:verticalScale(180), borderRadius:20, borderWidth:2, borderColor:"#D8D8D8", marginLeft:"5%", marginVertical:"8%", marginBottom:"1%"}} />
-        <AntDesign name='heart' size={18} onPress={()=>{favorited? removeFavorite():addFavorite() }} color={favorited ? "#F85454":"#fff"} style={{position:"absolute", top:verticalScale(40), right:horizontalScale(25), backgroundColor:"#0005", borderRadius:40, padding:"2%"}} />
+        <Image source={{uri:city.image}} style={{width:horizontalScale(310), height:verticalScale(220), borderRadius:20, borderWidth:2, borderColor:"#D8D8D8", marginLeft:"5%", marginVertical:"4%", marginBottom:"1%"}} />
+        <AntDesign name='heart' size={18} onPress={()=>{favorited? removeFavorite():addFavorite() }} color={favorited ? "#F85454":"#fff"} style={{position:"absolute", top:verticalScale(30), right:horizontalScale(25), backgroundColor:"#0005", borderRadius:40, padding:"2%"}} />
       </View>
       <View style={{marginLeft:"5%"}}>
         <View style={{flexDirection:"row", alignItems:"center"}}>
@@ -60,15 +62,15 @@ const DetailPage = ({navigation, route}) => {
         <Text style={styles.subtitle}>{city.description}</Text>
       </View>
       <TouchableOpacity onPress={()=>navigation.navigate("SuggestedPrograms", {city: city.city})} style={styles.mainButton}>
-        <Text style={styles.buttonText} >Suggested Programs</Text>
+        <Text style={styles.buttonText} >{t("common:SuggestedPrograms")}</Text>
+        <AntDesign name='right' size={20} color={"#000"} />
+      </TouchableOpacity >
+      <TouchableOpacity onPress={()=>navigation.navigate("CommunityProgram", {city: city.city})} style={styles.mainButton}>
+        <Text style={styles.buttonText} >{t("common:CommunityPrograms")}</Text>
         <AntDesign name='right' size={20} color={"#000"} />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.mainButton}>
-        <Text style={styles.buttonText} >Community Programs</Text>
-        <AntDesign name='right' size={20} color={"#000"} />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.mainButton}>
-        <Text style={styles.buttonText} >Places To Visit</Text>
+      <TouchableOpacity onPress={()=>navigation.navigate("PlacesToVisit", {city: city})} style={styles.mainButton}>
+        <Text style={styles.buttonText} >{t("common:PlacesTo")}</Text>
         <AntDesign name='right' size={20} color={"#000"} />
       </TouchableOpacity>
     </View>

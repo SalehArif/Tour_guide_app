@@ -11,6 +11,8 @@ import { verticalScale } from '../helpers/Metrics';
 import AdminProfileStack from './AdminProfileStack';
 import UserStack from './UserStack';
 import UserProfileStack from './UserProfileStack';
+import UserLikesStack from './UserLikesStack';
+import Notifications from '../screens/Notifications';
 
 const Tab = createBottomTabNavigator();
 
@@ -36,7 +38,7 @@ export default function UserTabs() {
             </View>
         )
     }}/>
-        <Tab.Screen name="Settings" component={Settings} 
+        <Tab.Screen name="UserLikesStack" component={UserLikesStack} 
         options={{
             tabBarIcon:({focused, size}) => (
                 <View>
@@ -49,7 +51,7 @@ export default function UserTabs() {
                 </View>
             ),
         }}/>
-        <Tab.Screen name="Settings1" component={Settings} 
+        <Tab.Screen name="Notifications" component={Notifications} 
         options={{
             tabBarIcon:({focused, size}) => (
                 <View>

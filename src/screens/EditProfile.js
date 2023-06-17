@@ -7,6 +7,8 @@ import { horizontalScale, moderateScale, verticalScale } from '../helpers/Metric
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {launchImageLibrary} from 'react-native-image-picker';
+import { useTranslation } from 'react-i18next';
+
 
 const EditProfile = ({navigation}) => {
 	const [user, setUser] = React.useState(auth().currentUser)
@@ -16,7 +18,8 @@ const EditProfile = ({navigation}) => {
   const [loading, setLoading] = useState(false);
   const [passwordHidden, setPasswordHidden] = useState(true);
   const [image, setImage] = React.useState(user.photoURL)
-	
+  const { t } = useTranslation()
+
 	const chooseImage = async ()=>{
 		const result = await launchImageLibrary({includeBase64:true, mediaType:"photo", quality:0.5});
 		if(result.assets){
@@ -70,30 +73,30 @@ const EditProfile = ({navigation}) => {
 							<Image source={require("../assets/User.png")} style={styles.image} />
 					}
 					<View style={{alignItems:"flex-start"}}>
-						<Text style={styles.subtitle}>Upload profile picture</Text>
+						<Text style={styles.subtitle}>{t("common:UploadPicture")}</Text>
 						<TouchableOpacity style={styles.mainButton1} onPress={chooseImage}>
 							<AntDesign name='camerao' size={20} />
-							<Text style={styles.buttonText1}>Upload</Text>
+							<Text style={styles.buttonText1}>{t("common:Upload")}</Text>
 						</TouchableOpacity>
 					</View>
 				</View>
         <TextInput
 					value={name}
-          placeholder="Full Name"
+          placeholder={t("common:FullName")}
           placeholderTextColor={"#828F9C"}
           onChangeText={setName}
           style={styles.input}
         />
         <TextInput
 					value={email}
-          placeholder="Email Address"
+          placeholder={t("common:Email")}
           placeholderTextColor={"#828F9C"}
           onChangeText={setEmail}
           style={styles.input}
         />
         <TextInput
 					value={password}
-          placeholder="Password"
+          placeholder={t("common:password")}
           placeholderTextColor={"#828F9C"}
           onChangeText={setPassword}
           secureTextEntry={passwordHidden}
@@ -105,7 +108,7 @@ const EditProfile = ({navigation}) => {
         >
           {loading ? 
             <ActivityIndicator color={"#000"} size={'large'} style={{marginVertical:"1%"}}/>:
-            <Text style={styles.buttonText}>Save Changes</Text>
+            <Text style={styles.buttonText}>{t("common:SaveChanges")}</Text>
           }
         </TouchableOpacity>
         

@@ -12,7 +12,7 @@ import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { API_KEY } from "@env"
 
-const AddActivity = ({navigation}) => {
+const AddActivity = ({navigation, route}) => {
 	const [image, setImage] = React.useState()
 	const [loading, setLoading] = React.useState(false)
 	const [place, setPlace] = React.useState("");
@@ -23,6 +23,15 @@ const AddActivity = ({navigation}) => {
 	const [location, setLocation] = React.useState()
 	const {t} = useTranslation();
 
+	
+	const resetFields = ()=>{
+		// setCity("")
+		// setLocation()
+		setActivityName("")
+		setActivityTime("")
+		setPlace("")
+		setImage(null)
+	  }
 
 	const chooseImage = async ()=>{
 		const result = await launchImageLibrary({includeBase64:true, mediaType:"photo", quality:0.5});
@@ -35,25 +44,28 @@ const AddActivity = ({navigation}) => {
 		// add schedule id as well
 		setActivities(prevState => 
 			[...prevState, 
-			{activityName, activityTime, place, city, image:`data:image/${image.type};base64,${image.base64}`, location, schedule_id:"QxzTqTRiKGnh2Sw48Kpf" }
+			{activityName, activityTime, place, city, image:`data:image/${image.type};base64,${image.base64}`, location, schedule_id:route.params.scheduleId }
 			] )
+		resetFields()
 	}
 
 	const addactivityToDB = async ()=>{
-		  // Create a new batch instance
-			const batch = firestore().batch();
-			activities.forEach(item => {
-				var docRef = firestore().collection("activities").doc(); //automatically generate unique id
-				batch.set(docRef, item);
-			})
+		// Create a new batch instance
+		const batch = firestore().batch();
+		activities.forEach(item => {
+			var docRef = firestore().collection("activities").doc(); //automatically generate unique id
+			batch.set(docRef, item);
+		})
 
-			try {
-				const result = await batch.commit();
-				setActivities([])
-			} catch (error) {
-				console.log(error)
-			}
+		try {
+			const result = await batch.commit();
+			resetFields()
+			setActivities([])
+		} catch (error) {
+			console.log(error)
+		}
 	}
+
 
 	const openMaps = (location)=>{
 		const scheme = Platform.select({ ios: 'maps://app?', android: 'google.navigation:q=' });
@@ -75,7 +87,7 @@ const AddActivity = ({navigation}) => {
 					<TouchableOpacity onPress={()=>navigation.goBack()} >
 							<Ionicons name='chevron-back' size={24} style={{borderRadius:50, borderWidth:1, borderColor:"#E2E2E2", backgroundColor:"white", marginLeft:"2%", padding:"1%", alignSelf:"flex-start"}} />
 					</TouchableOpacity>
-					<Text style={[styles.title,{ marginLeft:"20%",fontSize:20}]}>Add Schedule</Text>
+					<Text style={[styles.title,{ marginLeft:"20%",fontSize:20}]}>{t("common:AddSchedule")}</Text>
 			</View>
 			<View style={{borderRadius:10, borderColor:"#DBDBDB", borderWidth:1, paddingHorizontal:"2%", paddingVertical:"4%", marginVertical:"4%", marginBottom:"2%"}} >
 				<View style={{flexDirection:"row", alignItems:"center"}} >
@@ -87,24 +99,24 @@ const AddActivity = ({navigation}) => {
 					}
 					</TouchableOpacity>
 					<TouchableOpacity onPress={chooseImage}  style={{backgroundColor:"#E7E7E7", marginTop:"2%", marginLeft:"2%", paddingHorizontal:"4%", paddingVertical:"2%", borderRadius:20}} >
-							<Text style={[styles.title, {fontSize:18, textAlign:"center"}]}>Upload pictures</Text>
+							<Text style={[styles.title, {fontSize:18, textAlign:"center"}]}>{t("common:Uploadpictures")}</Text>
 					</TouchableOpacity>
 				</View>
 				<TextInput
 					value={place}
-					placeholder='Place Name'
+					placeholder={t("common:PlaceName")}
 					onChangeText={setPlace}
 					style={{backgroundColor:"white", borderWidth:1, borderRadius:20, borderColor:"#DBDBDB", width:"95%", marginHorizontal:"2%" ,paddingLeft:"6%", marginVertical:"1%" }}
 				/>
 				<TextInput
 					value={activityName}
-					placeholder='Activity Name'
+					placeholder={t("common:ActivityName")}
 					onChangeText={setActivityName}
 					style={{backgroundColor:"white", borderWidth:1, borderRadius:20, borderColor:"#DBDBDB", width:"95%", marginHorizontal:"2%" ,paddingLeft:"6%", marginVertical:"1%" }}
 				/>
 				<TextInput
 					value={activityTime}
-					placeholder='Activity Time'
+					placeholder={t("common:ActivityTime")}
 					onChangeText={setActivityTime}
 					style={{backgroundColor:"white", borderWidth:1, borderRadius:20, borderColor:"#DBDBDB", width:"95%", marginHorizontal:"2%" ,paddingLeft:"6%", marginVertical:"1%" }}
 				/>
@@ -118,7 +130,7 @@ const AddActivity = ({navigation}) => {
 						style={{backgroundColor:"white", borderWidth:1, borderRadius:25, borderColor:"#DBDBDB", width:"95%", marginHorizontal:"2%" ,paddingLeft:"6%",}}
 					/> */}
 					<GooglePlacesAutocomplete
-						placeholder='Search and chose activity location'
+						placeholder={t("common:actSearch")}
 						onPress={(data, details = null) => {
 						// 'details' is provided when fetchDetails = true
 						if(data.terms.length == 3)
@@ -150,7 +162,7 @@ const AddActivity = ({navigation}) => {
 					/>
 				</View>
 				<TouchableOpacity onPress={addactivity} style={[styles.mainButton, { paddingHorizontal:"3%", marginHorizontal:"8%", marginTop:"2%", paddingVertical:0 }]} >
-					<Text style={styles.buttonText} >Add Activity</Text>
+					<Text style={styles.buttonText} >{t("common:AddActivity")}</Text>
 				</TouchableOpacity>
 			</View>
 			<FlatList
@@ -162,26 +174,26 @@ const AddActivity = ({navigation}) => {
 				style={{height:verticalScale(150)}}
 				renderItem={({item,index}) => (
 					<View style={{borderRadius:10, flexDirection:"row", alignItems:"center", borderColor:"#DBDBDB", borderWidth:1, paddingHorizontal:"2%", paddingVertical:"4%", marginVertical:"1%"}} >
-						<Image source={{uri:`data:image/${image.type};base64,${image.base64}`}} resizeMode={"stretch"} style={{width:horizontalScale(80), height:verticalScale(80), borderRadius:10}} />
+						<Image source={{uri:item.image}} resizeMode={"stretch"} style={{width:horizontalScale(80), height:verticalScale(80), borderRadius:10}} />
 						<View style={{marginLeft:"5%"}} >
 							<View style={{flexDirection:"row", alignItems:"center"}} >
 								<Ionicons name='location-sharp' size={16} color={"red"} />
 								<Text style={{fontWeight:"500", color:"#000", fontSize:14, marginBottom:"4%"}} >{item.city}</Text>
 							</View>
-							<Text style={{fontWeight:"500", color:"#000", fontSize:14, marginBottom:"4%"}}>Activity: {item.activityName}</Text>
-							<Text style={{fontWeight:"500", color:"#000", fontSize:14, marginBottom:"4%"}}>Time: {item.activityTime}</Text>
+							<Text style={{fontWeight:"500", color:"#000", fontSize:14, marginBottom:"4%"}}>{t("common:Activity")} {item.activityName}</Text>
+							<Text style={{fontWeight:"500", color:"#000", fontSize:14, marginBottom:"4%"}}>{t("common:Time")} {item.activityTime}</Text>
 							<TouchableOpacity onPress={()=>openMaps(item.location)}  style={{flexDirection:"row", justifyContent:"space-evenly", borderRadius:30, backgroundColor:"#F8F8F8", borderColor:"#DFDFDF", paddingHorizontal:"2%", paddingVertical:"2%", borderWidth:2 }} >
 								<MaterialCommunityIcons name='directions-fork' size={15} color={"#1976D2"} />
-								<Text style={{color:"#1976D2" }} >Directions</Text>
+								<Text style={{color:"#1976D2" }} >{t("common:Directions")}</Text>
 								<FontAwesome name='angle-double-right' size={15}  />
 							</TouchableOpacity>
 						</View>
-						<Text style={{alignSelf:"flex-end", marginLeft:"10%"}} >day 1</Text>
+						<Text style={{alignSelf:"flex-end", marginLeft:"10%"}} >{t("common:day")} 1</Text>
 					</View>
 				)}
 			/>
 			<TouchableOpacity style={styles.mainButton} onPress={addactivityToDB} >
-				<Text style={styles.buttonText} >Add Schedule</Text>
+				<Text style={styles.buttonText} >{t("common:AddSchedule")}</Text>
 			</TouchableOpacity>
     </View>
   )

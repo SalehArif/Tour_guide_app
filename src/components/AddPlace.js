@@ -82,8 +82,8 @@ const AddPlace = () => {
   return (
     <View style={styles.viewWrapper}>
       <StatusBar barStyle={"dark-content"} backgroundColor={showModal ? "#0007":"#f2f2f2"}/>
-      <ScrollView>
-      <Text style={styles.subtitle}>Add different places for the users to see and visit those places.</Text>
+      {/* <ScrollView> */}
+      <Text style={styles.subtitle}>{t("common:AddPlacesSub")}</Text>
       <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between", backgroundColor:"white" ,borderWidth:1, borderColor:"#ccc", borderRadius:50,marginVertical:"3%", paddingLeft:"6%", paddingVertical:"0.25%"}}>
         {/* <TextInput
             value={city}
@@ -93,12 +93,13 @@ const AddPlace = () => {
             style={{backgroundColor:"white", fontSize:16}}
           /> */}
          <GooglePlacesAutocomplete
-            placeholder='In which city does the place exist?'
+            placeholder={t("common:locate")}
             onPress={(data, details = null) => {
               // 'details' is provided when fetchDetails = true
               setCity(data)
               console.log(data, details);
             }}
+            disableScroll={true}
             query={{
               key: API_KEY,
               language: 'en',
@@ -115,13 +116,13 @@ const AddPlace = () => {
           />
         <Ionicons name='md-search-outline' size={20}  style={{paddingHorizontal:"6%"}} />
       </View>
-      <Text style={[styles.title, {fontSize:20}]}>Choose Category</Text>
+      <Text style={[styles.title, {fontSize:20}]}>{t("common:ChooseCategory")}</Text>
       <View style={{marginHorizontal:"1%", marginBottom:"2%"}}>
         {
           places.map((item, index) => (
             <TouchableOpacity key={index} onPress={()=>setSelected(index)} style={{flexDirection:"row", alignItems:"center", marginHorizontal:"4%" }}>
               <RadioButton selected={selected == index} />
-              <Text style={[styles.subtitle, {fontSize:16,marginBottom:"1%", paddingHorizontal:"5%", paddingVertical:"1%", color:"#000"}]} >{item}</Text>
+              <Text style={[styles.subtitle, {fontSize:16,marginBottom:"1%", paddingHorizontal:"5%", paddingVertical:"1%", color:"#000"}]} >{t(`common:${item}`)}</Text>
             </TouchableOpacity>
           ))
         }
@@ -132,13 +133,13 @@ const AddPlace = () => {
 					<Image source={{uri:`data:image/${image.type};base64,${image.base64}`}} resizeMode={"stretch"} style={{width:horizontalScale(120), height:verticalScale(100), borderRadius:10}} />:
 					<>
 						<MaterialCommunityIcons name='file-image' size={30} color={"#333"}/>
-						<Text >Add Image</Text>
+						<Text >{t("common:AddImage")} </Text>
 					</>
 			}
 			</TouchableOpacity>
       <TextInput
         value={place}
-        placeholder='Write name of the place. . .'
+        placeholder={t("common:namePlace")}
         onChangeText={setPlace}
         placeholderTextColor={"#616163"}
         style={{backgroundColor:"white", borderWidth:1, borderRadius:20, borderColor:"#DBDBDB", width:"95%", marginHorizontal:"2%" ,paddingLeft:"6%",}}
@@ -153,12 +154,13 @@ const AddPlace = () => {
 					style={{backgroundColor:"white", borderWidth:1, borderRadius:25, borderColor:"#DBDBDB", width:"95%", marginHorizontal:"2%" ,paddingLeft:"8%",}}
 				/> */}
         <GooglePlacesAutocomplete
-            placeholder='Search place and add location'
+            placeholder={t("common:locationPlace")}
             onPress={(data, details = null) => {
               // 'details' is provided when fetchDetails = true
               setGooglePlace(data)
               console.log(data, details);
             }}
+            disableScroll={true}
             query={{
               key: API_KEY,
               language: 'en',
@@ -174,11 +176,10 @@ const AddPlace = () => {
         {
           loading ?
           <ActivityIndicator size={"large"} />:
-          <Text style={styles.buttonText}>Add Place</Text>
+          <Text style={styles.buttonText}>{t("common:AddPlace")}</Text>
         }
 			</TouchableOpacity>
-			{/* <LogoutButton/> */}
-      </ScrollView>
+      {/* </ScrollView> */}
       <Modal 
         animationType="slide"
         transparent={true}
@@ -194,8 +195,8 @@ const AddPlace = () => {
               style={[styles.button, styles.buttonClose]}
               onPress={() => {setModal(!showModal); resetFields();}}>
               <AntDesign name='checkcircle' size={moderateScale(70)} color={"#31B072"} style={{alignSelf:"center"}} />
-              <Text style={{ marginTop:"15%", fontSize:15, fontWeight:"700",textAlign:"center"}}>Well done,</Text>
-              <Text style={{ textAlign:"center", fontSize:15, fontWeight:"700",}}>Place added Successfully!</Text>
+              <Text style={{ marginTop:"15%", fontSize:15, fontWeight:"700",textAlign:"center"}}>{t("common:Welldone")}</Text>
+              <Text style={{ textAlign:"center", fontSize:15, fontWeight:"700",}}>{t("common:PlaceAdded")}</Text>
             </TouchableOpacity>
           </View>
         </View>

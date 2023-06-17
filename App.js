@@ -1,21 +1,14 @@
 import 'react-native-gesture-handler';
 import React,{useState, useEffect} from 'react';
-import {
-  StyleSheet,
-  ActivityIndicator,
-  View,
-  StatusBar
-} from 'react-native';
+import { StatusBar } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from '@react-navigation/stack';
 import auth from '@react-native-firebase/auth';
 
 // Components
-import UserLandingPage from './src/screens/UserLandingPage';
 import LoginNavigation from './src/navigation/LoginNavigation';
 import UserTabs from './src/navigation/UserTabs';
-import TopTab from './src/navigation/AdminTopTabs';
-import AdminTabNav from './src/navigation/AdminTabs';
+import AdminTabs from './src/navigation/AdminTabs';
 
 const Stack = createStackNavigator();
 
@@ -36,46 +29,19 @@ const App = () => {
    }, []);
  
    if (initializing) return null;
-  //  createUserWithEmailAndPassword for signup
    if (!user) {
      return (
        <LoginNavigation/>
      );
    }
- 
-   // <UserNavigation/>
-  //  <AdminTabNav/>
+
+   // <UserTabs />
    return (
      <NavigationContainer>
         <StatusBar barStyle={"dark-content"} backgroundColor={"#f2f2f2"}/>
-        <UserTabs />
+        <AdminTabs/>
     </NavigationContainer>
    );
 };
-
-const LoadingIndicator = () => {
-  return (
-    <View style={styles.activityContainer}>
-      <ActivityIndicator size="large" />
-    </View>
-  );
-};
  
-function UserNavigation(){
-  return (
-      <Stack.Navigator initialRouteName='Main' screenOptions={{headerShown:false}}>
-        <Stack.Screen name="Main" component={UserLandingPage} />
-      </Stack.Navigator>
-      
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  activityContainer: {justifyContent:"center",alignItems:"center"}
-});
-
 export default App;

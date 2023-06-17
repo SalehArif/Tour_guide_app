@@ -37,10 +37,10 @@ const PreviewAddedCity = ({navigation, route}) => {
 					<View style={{flexDirection:"row", alignItems:"center",}}>
 						<Ionicons name='md-menu' size={28} color={"#2D302E"}/>
 						<View style={{justifyContent:"center", marginHorizontal:"10%"}}>
-							<Text style={[styles.title,{ paddingHorizontal:0}]}>Howday{user?.displayName ? `, ${user?.displayName?.split(" ")[0]}!`:""}</Text>
+							<Text style={[styles.title,{ paddingHorizontal:0}]}>{t("common:greet")}{user?.displayName ? `, ${user?.displayName?.split(" ")[0]}!`:""}</Text>
 							<View style={{flexDirection:"row", alignItems:"center",}}>
 								<Ionicons name='location-sharp' size={16} color={"red"} />
-								<Text style={[styles.subtitle, {color:"red", paddingHorizontal:0, marginBottom:0}]}>Current Location</Text>
+								<Text style={[styles.subtitle, {color:"red", paddingHorizontal:0, marginBottom:0}]}>{t("common:CurrentLocation")}</Text>
 							</View>
 						</View>
 					</View>
@@ -49,7 +49,7 @@ const PreviewAddedCity = ({navigation, route}) => {
 					<Image source={require('../assets/User.png')} style={{width:50, height:50}} />
 					}
 			</View>
-			<Text style={[styles.title, {paddingTop:"4%", paddingBottom:"1%"}]} >Add City</Text>
+			<Text style={[styles.title, {paddingTop:"4%", paddingBottom:"1%"}]} >{t("common:AddCity")}</Text>
 			<Text style={styles.subtitle}>{t("common:add_city_subtitle")}</Text>
 			<View 
 			style={{alignItems:"center" ,backgroundColor:"#F0F4F4", borderColor:"white", borderWidth:2, borderRadius:10, padding:image? 0:"20%"}}>
@@ -76,7 +76,7 @@ const PreviewAddedCity = ({navigation, route}) => {
 				style={{backgroundColor:"#F0F4F4", marginHorizontal:"4%", marginVertical:"2%",borderColor:"white", borderWidth:2,paddingLeft:"4%", borderRadius:20, height:verticalScale(150)}}
 			/> */}
 			<TouchableOpacity style={styles.mainButton} onPress={()=> { route.params.addCityToDB(); navigation.goBack();}}>
-				<Text style={styles.buttonText}>Add the City</Text>
+				<Text style={styles.buttonText}>{t("common:AddtheCity")}</Text>
 			</TouchableOpacity>
 		</View>
   )

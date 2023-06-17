@@ -1,20 +1,15 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from "@react-navigation/native";
 import { View } from 'react-native';
-import Entypo from 'react-native-vector-icons/Entypo'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import AntDesign from 'react-native-vector-icons/AntDesign'
-import Octicons from 'react-native-vector-icons/Octicons'
 import Fontisto from 'react-native-vector-icons/Fontisto'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import UserLandingPage from '../screens/UserLandingPage';
 import Settings from '../screens/Settings';
-import AdminTopTabs from './AdminTopTabs';
 import AdminStack from './AdminStack';
 import AdminProfileStack from './AdminProfileStack';
 import { verticalScale } from '../helpers/Metrics';
-import SearchStack from './SearchStack';
+import SearchStack from './AdminSearchStack';
+import Notifications from '../screens/Notifications';
 const Tab = createBottomTabNavigator();
 
 export default function TabNav() {
@@ -49,7 +44,7 @@ export default function TabNav() {
                 </View>
             ),
         }}/>
-        <Tab.Screen name="Settings1" component={Settings} 
+        <Tab.Screen name="Notifications" component={Notifications} 
         options={{
             tabBarIcon:({focused, size}) => (
                 <View>

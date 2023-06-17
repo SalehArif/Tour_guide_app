@@ -5,10 +5,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import { horizontalScale, moderateScale, verticalScale } from '../helpers/Metrics';
+import { useTranslation } from 'react-i18next';
 
 const UserProfile = ({navigation}) => {
 	const [user, setUser] = React.useState(auth().currentUser)
   const [image, setImage] = React.useState(user.photoURL)
+  const { t } = useTranslation()
 
   return (
     <View style={styles.viewWrapper}>
@@ -16,7 +18,7 @@ const UserProfile = ({navigation}) => {
 				<TouchableOpacity onPress={()=>navigation.goBack()} >
 					<Ionicons name='chevron-back' size={24} style={{borderRadius:50, borderWidth:1, borderColor:"#E2E2E2", backgroundColor:"white", marginLeft:"2%", padding:"1%", alignSelf:"flex-start"}} />
 				</TouchableOpacity>
-				<Text style={[styles.title,{ fontSize:20}]} >Profile</Text>
+				<Text style={[styles.title,{ fontSize:20}]} >{t("common:Profile")}</Text>
 				<Ionicons name='settings-sharp' onPress={()=>navigation.navigate("Settings")} size={24} color={"#333"} style={{ marginLeft:"2%", padding:"1%", }} />
 			</View>
 			<View style={{alignItems:"center", marginTop:"20%"}} >
@@ -27,20 +29,20 @@ const UserProfile = ({navigation}) => {
 				<Text style={[styles.subtitle,{color:"#000", fontSize:20, marginTop:"3%"}]} >{auth().currentUser?.displayName ?? "User" }</Text>
 				<View style={{flexDirection:"row", alignItems:"center",}}>
 					<Ionicons name='location-sharp' size={16} color={"red"} />
-					<Text style={[styles.subtitle, {color:"red", paddingHorizontal:0, marginBottom:0}]}>Current Location</Text>
+					<Text style={[styles.subtitle, {color:"red", paddingHorizontal:0, marginBottom:0}]}>{t("common:CurrentLocation")}</Text>
 				</View>
 			</View>
 				<TouchableOpacity style={styles.mainButton1} onPress={()=>navigation.navigate("EditProfile")}>
 					<MaterialCommunityIcons name='account-edit' size={20} />
-					<Text style={styles.buttonText1}>Edit Profile</Text>
+					<Text style={styles.buttonText1}>{t("common:EditProfile")}</Text>
 				</TouchableOpacity>
         <View style={{marginTop:"12%"}}>
           <TouchableOpacity style={styles.mainButton} onPress={()=>navigation.navigate("AddSchedule")}>
-            <Text style={styles.buttonText}>Add Schedule</Text>
+            <Text style={styles.buttonText}>{t("common:AddSchedule")}</Text>
             <FontAwesome name='angle-double-right' size={25} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.mainButton} onPress={()=>navigation.navigate("MySchedules")}>
-            <Text style={styles.buttonText}>See My Schedules</Text>
+            <Text style={styles.buttonText}>{t("common:SeeSchedules")}</Text>
             <FontAwesome name='angle-double-right' size={25} />
           </TouchableOpacity>
         </View>

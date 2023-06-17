@@ -7,9 +7,11 @@ import AddPlace from '../components/AddPlace';
 import { horizontalScale } from '../helpers/Metrics';
 const Tab = createMaterialTopTabNavigator();
 import auth from '@react-native-firebase/auth';
+import { useTranslation } from 'react-i18next';
 
 export default function AdminTopTabs() {
   const [user, setuser] = useState();
+  const { t } = useTranslation()
 
   useEffect(()=>{
     setuser(auth().currentUser)
@@ -21,21 +23,21 @@ export default function AdminTopTabs() {
         <View style={{flexDirection:"row", alignItems:"center",}}>
           <Ionicons name='md-menu' size={28} color={"#2D302E"}/>
           <View style={{justifyContent:"center", marginHorizontal:"10%"}}>
-            <Text style={[styles.title,{fontSize:20, paddingHorizontal:0}]}>Howday{user?.displayName ? `, ${user?.displayName?.split(" ")[0]}!`:""}</Text>
+            <Text style={[styles.title,{fontSize:20, paddingHorizontal:0}]}>{t("common:greet")}{user?.displayName ? `, ${user?.displayName?.split(" ")[0]}!`:""}</Text>
             <View style={{flexDirection:"row", alignItems:"center",}}>
               <Ionicons name='location-sharp' size={16} color={"red"} />
-              <Text style={[styles.subtitle, {color:"red", paddingHorizontal:0, marginBottom:0}]}>Current Location</Text>
+              <Text style={[styles.subtitle, {color:"red", paddingHorizontal:0, marginBottom:0}]}>{t("common:CurrentLocation")}</Text>
             </View>
           </View>
         </View>
         { user?.photoURL ? 
         <Image source={{uri:user.photoURL}} style={{width:50, height:50, borderRadius:50, borderColor:"#96BCA9", borderWidth:2}} /> :
-        <Image source={require('../assets/User.png')} style={{width:50, height:50}} />
+        <Image source={require('../assets/user_icon.png')} style={{width:50, height:50}} />
          }
       </View>
     <Tab.Navigator screenOptions={{tabBarStyle:{backgroundColor:"#f2f2f2"}, tabBarIndicatorStyle: {borderBottomColor: '#35C37E',borderBottomWidth: 2}}}>
-        <Tab.Screen name="AddCity" component={AddCity} options={{tabBarLabel:"Add City", tabBarLabelStyle: styles.tabText}} />
-        <Tab.Screen name="AddPlace" component={AddPlace} options={{tabBarLabel:"Add Place", tabBarLabelStyle: styles.tabText, tabBarActiveTintColor:"#000"}} />
+        <Tab.Screen name="AddCity" component={AddCity} options={{tabBarLabel:t("common:AddCity"), tabBarLabelStyle: styles.tabText}} />
+        <Tab.Screen name="AddPlace" component={AddPlace} options={{tabBarLabel:t("common:AddPlace"), tabBarLabelStyle: styles.tabText, tabBarActiveTintColor:"#000"}} />
     </Tab.Navigator>
     </>
   );

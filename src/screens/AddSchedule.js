@@ -28,28 +28,28 @@ const AddSchedule = ({navigation}) => {
 		}
 	}
 
-	const addCityToDB = async ()=>{
-		// setLoading(true)
-		// const obj = {
-		// 	image:`data:image/${image.type};base64,${image.base64}`,
-		// 	city:city,
-		// 	description:description,
-		// 	days:parseInt(days),
-		// 	addedBy: auth().currentUser.uid
-		// }
-		// try {
-		// 	const documentRef = await firestore().collection("schedules").add(obj)
-		// 	resetFields();
-		// 	// console.log(documentRef.id)
-		// 	ToastAndroid.showWithGravity("Schedule Added Succesfully", ToastAndroid.SHORT, ToastAndroid.BOTTOM)	
-		// 	navigation.navigate("AddActivity", { scheduleId: documentRef.id });
-		// } catch (error) {
-		// 	console.log(error)
-		// 	ToastAndroid.showWithGravity("Schedule couldn't be added. You may have to select a different image", ToastAndroid.SHORT, ToastAndroid.LONG)
+	const addScheduleToDB = async ()=>{
+		setLoading(true)
+		try {
+			const obj = {
+				image:`data:image/${image.type};base64,${image.base64}`,
+				city:city,
+				description:description,
+				days:parseInt(days),
+				addedBy: auth().currentUser.uid
+			}
+			const documentRef = await firestore().collection("schedules").add(obj)
+			resetFields();
+			// console.log(documentRef.id)
+			ToastAndroid.showWithGravity("Schedule Added Succesfully", ToastAndroid.SHORT, ToastAndroid.BOTTOM)	
+			navigation.navigate("AddActivity", { scheduleId: documentRef.id });
+		} catch (error) {
+			console.log(error)
+			ToastAndroid.showWithGravity("Schedule couldn't be added. You may have to select a different image", ToastAndroid.LONG, ToastAndroid.BOTTOM)
 			
-		// }
-		// setLoading(false)
-		navigation.navigate("AddActivity",)
+		}
+		setLoading(false)
+		// navigation.navigate("AddActivity",)
 	}
 
 	const resetFields = ()=>{
@@ -67,7 +67,7 @@ const AddSchedule = ({navigation}) => {
 					<TouchableOpacity onPress={()=>navigation.goBack()} >
 							<Ionicons name='chevron-back' size={24} style={{borderRadius:50, borderWidth:1, borderColor:"#E2E2E2", backgroundColor:"white", marginLeft:"2%", padding:"1%", alignSelf:"flex-start"}} />
 					</TouchableOpacity>
-					<Text style={[styles.title,{ marginLeft:"20%",fontSize:20}]}>Add Schedule</Text>
+					<Text style={[styles.title,{ marginLeft:"20%",fontSize:20}]}>{t("common:AddSchedule")}</Text>
 			</View>
 			<TouchableOpacity onPress={chooseImage} 
 			style={{alignItems:"center" ,backgroundColor:"#F0F4F4", borderColor:"white", borderWidth:2, borderRadius:10, marginTop:"8%" ,padding:image? 0:"16%"}}>
@@ -89,7 +89,7 @@ const AddSchedule = ({navigation}) => {
 					style={{backgroundColor:"white", borderWidth:1, borderRadius:25, borderColor:"#DBDBDB", width:"95%", marginHorizontal:"2%" ,paddingLeft:"6%",}}
 				/> */}
 				<GooglePlacesAutocomplete
-					placeholder='Search and chose the city'
+					placeholder={t("common:AddcitySub1")}
 					onPress={(data, details = null) => {
 					// 'details' is provided when fetchDetails = true
 					if(data.terms.length == 3)
@@ -118,25 +118,25 @@ const AddSchedule = ({navigation}) => {
 				/>
 			</View>
 			<View style={{flexDirection:"row", alignItems:"center", marginHorizontal:"10%"}} >
-					<Text style={[styles.title, {fontSize:16}]} >Program duration:</Text>
+					<Text style={[styles.title, {fontSize:16}]} >{t("common:Programduration")}</Text>
 					<TextInput
 						value={days}
 						placeholder="0"
 						onChangeText={(value)=> {parseInt(value)>=0 || value=="" ? setDays(value):null}}
 						style={{backgroundColor:"white", borderWidth:1, borderRadius:50, borderColor:"#DBDBDB", paddingVertical:"1%",marginHorizontal:"2%", fontSize:18 ,paddingHorizontal:"4%",}}
 					/>
-					<Text style={[styles.title, {fontSize:16}]} >days</Text>
+					<Text style={[styles.title, {fontSize:16}]} >{t("common:days")}</Text>
 			</View>
 			<TextInput
 				multiline
 				value={description}
 				onChangeText={setDescription}
-				placeholder='Write place description here. . .'
+				placeholder={t("common:WriteDescription")}
 				textAlignVertical="top"
 				style={{backgroundColor:"#F0F4F4", marginHorizontal:"4%", marginVertical:"2%",borderColor:"white", borderWidth:2,paddingLeft:"6%", paddingTop:"6%", borderRadius:20, height:verticalScale(150)}}
 			/>
-			<TouchableOpacity style={styles.mainButton} onPress={()=>{addCityToDB(); }}>
-				<Text style={styles.buttonText}>Next</Text>
+			<TouchableOpacity style={styles.mainButton} onPress={()=>{addScheduleToDB(); }}>
+				<Text style={styles.buttonText}>{t("common:Next")}</Text>
 			</TouchableOpacity>
 			<Modal
 				visible={loading}

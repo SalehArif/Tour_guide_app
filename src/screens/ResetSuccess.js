@@ -1,22 +1,24 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import React from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import { useTranslation } from 'react-i18next';
 
 
 const ResetSuccess = ({navigation}) => {
+  const { t } = useTranslation()
+
   return (
     <View style={styles.container}>
       <MaterialCommunityIcons name='credit-card-check-outline' size={30} color={"white"} style={{padding:"7%", borderRadius:50,backgroundColor:"#393333", alignSelf:"center"}} />
-      <Text style={styles.title}>Password Reset Successfully</Text>
-      <Text style={styles.subtitle}>
-      Your password has been changed succesfully
+      <Text style={styles.title}>{t("common:PasswordReset")}</Text>
+      <Text style={styles.subtitle}>{t("common:PasswordReset2")}
       </Text>
       <TouchableOpacity
             style={styles.mainButton}
             onPress={ async ()=>{ navigation.navigate("Login")}}
             // await auth().sendPasswordResetEmail(email);
           >
-            <Text style={styles.buttonText}>Back to login</Text>
+            <Text style={styles.buttonText}>{t("common:Backtologin")}</Text>
       </TouchableOpacity>
       
     </View>

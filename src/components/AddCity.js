@@ -39,7 +39,7 @@ const AddCity = ({navigation}) => {
 			ToastAndroid.showWithGravity("City Added Succesfully", ToastAndroid.SHORT, ToastAndroid.BOTTOM)	
 		} catch (error) {
 			console.log(error)
-			ToastAndroid.showWithGravity("City couldn't be added. You may have to select a different image", ToastAndroid.SHORT, ToastAndroid.LONG)
+			ToastAndroid.showWithGravity("City couldn't be added. You may have to select a different image", ToastAndroid.LONG, ToastAndroid.BOTTOM)
 			
 		}
 		setLoading(false)
@@ -76,7 +76,7 @@ const AddCity = ({navigation}) => {
 					style={{backgroundColor:"white", borderWidth:1, borderRadius:25, borderColor:"#DBDBDB", width:"95%", marginHorizontal:"2%" ,paddingLeft:"6%",}}
 				/> */}
 				<GooglePlacesAutocomplete
-					placeholder='Search and chose the city'
+					placeholder={t("common:AddcitySub1")}
 					onPress={(data, details = null) => {
 					// 'details' is provided when fetchDetails = true
 					if(data.terms.length == 3)
@@ -102,13 +102,13 @@ const AddCity = ({navigation}) => {
 				multiline
 				value={description}
 				onChangeText={setDescription}
-				placeholder='Write place description here. . .'
+				placeholder={t("common:WriteDescription")}
 				textAlignVertical="top"
 				style={{backgroundColor:"#F0F4F4", marginHorizontal:"4%", marginVertical:"2%",borderColor:"white", borderWidth:2,paddingLeft:"6%", paddingTop:"6%", borderRadius:20, height:verticalScale(150)}}
 			/>
 			<TouchableOpacity style={styles.mainButton} onPress={()=>{navigation.navigate("PreviewAddedCity", { city: 
 				{image:image.base64,imageType:image.type,city:city,description:description}, addCityToDB }); }}>
-				<Text style={styles.buttonText}>Add the City</Text>
+				<Text style={styles.buttonText}>{t("common:AddtheCity")}</Text>
 			</TouchableOpacity>
 			{/* </ScrollView> */}
 			<Modal

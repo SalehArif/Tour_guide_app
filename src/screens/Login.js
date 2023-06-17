@@ -5,6 +5,7 @@ import auth from '@react-native-firebase/auth';
 import { Divider } from 'react-native-paper';
 // import AntDesign from 'react-native-vector-icons/AntDesign'
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { useTranslation } from 'react-i18next';
 
 GoogleSignin.configure({
   webClientId: '707850947275-ihmk9vjmfjifnu5iekcorrqad4mhij7j.apps.googleusercontent.com',
@@ -15,7 +16,7 @@ export default function Login({navigation}){
   const [password, setPassword] = useState('');
   const {width, height} = Dimensions.get("window")
   const [passwordHidden, setPasswordHidden] = useState(true);
-
+  const { t } = useTranslation()
   const signIn = useCallback(async () => {
           auth()
           .signInWithEmailAndPassword(email, password)
@@ -59,35 +60,35 @@ export default function Login({navigation}){
   return (
     <SafeAreaProvider>
       <View style={styles.viewWrapper}>
-        <Text style={styles.title}>Sign In</Text>
+        <Text style={styles.title}>{t("common:login")}</Text>
         <Text style={styles.subtitle}>
-        Please enter your email and password to login to your account.
+        {t("common:loginSub")}
         </Text>
         <TextInput
-          placeholder="Email Address"
+          placeholder={t("common:Email")}
           placeholderTextColor={"#828F9C"}
           onChangeText={setEmail}
           style={styles.input}
         />
         <TextInput
-          placeholder="Your Password"
+          placeholder={t("common:yourPassword")}
           placeholderTextColor={"#828F9C"}
           onChangeText={setPassword}
           secureTextEntry={passwordHidden}
           style={styles.input}
         />
         <TouchableOpacity onPress={()=>navigation.navigate("ForgotPassword")} style={{alignSelf:"flex-end", marginRight:"3%"}} >
-          <Text >Forgot Password?</Text>
+          <Text >{t("common:ForgotPassword")}</Text>
         </TouchableOpacity>
           <TouchableOpacity
             style={styles.mainButton}
             onPress={onPressSignIn}
           >
-            <Text style={styles.buttonText}>Login</Text>
+            <Text style={styles.buttonText}>{t("common:login")}</Text>
           </TouchableOpacity>
           <View style={{flexDirection:"row", marginTop:"5%", justifyContent:"space-evenly", alignItems:"center"}}>
             <Divider style={styles.divider} />
-            <Text>Or</Text>
+            <Text>{t("common:Or")}</Text>
             <Divider style={styles.divider}/>
           </View>
           <TouchableOpacity
@@ -95,14 +96,14 @@ export default function Login({navigation}){
             onPress={() => onGoogleButtonPress().then(() => ToastAndroid.showWithGravity('Signed in with Google!', ToastAndroid.SHORT, ToastAndroid.BOTTOM))}
           >
             <Image source={require("../assets/Google-Icon.png")} style={{width:width*0.05, height:width*0.05}}/>
-            <Text style={styles.buttonText}>Login with Google</Text>
+            <Text style={styles.buttonText}>{t("common:LoginGoogle")}</Text>
           </TouchableOpacity>
           <View style={{flexDirection:"row", position:"absolute", top:height, left:width*0.25}}>
-            <Text>Don't have an account? </Text>
+            <Text>{t("common:noAccount")} </Text>
             <TouchableOpacity
               onPress={() => navigation.navigate("Signup")}
             >
-              <Text style={styles.secondaryButton}>Sign up</Text>
+              <Text style={styles.secondaryButton}>{t("common:signup")}</Text>
             </TouchableOpacity>
           </View>
         

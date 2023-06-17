@@ -3,6 +3,7 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import firestore from '@react-native-firebase/firestore';
 import {StyleSheet, Text, View, Alert, TextInput, TouchableOpacity, ActivityIndicator, Dimensions} from 'react-native';
 import auth from '@react-native-firebase/auth';
+import { useTranslation } from 'react-i18next';
 
 export default function Signup({navigation}){
   const [email, setEmail] = useState('');
@@ -13,6 +14,7 @@ export default function Signup({navigation}){
   const [loading, setLoading] = useState(false);
   // state values for toggable visibility of features in the UI
   const [passwordHidden, setPasswordHidden] = useState(true);
+  const { t } = useTranslation()
 
   const signup = useCallback(async () => {
     const userCreds = await auth()
@@ -56,34 +58,34 @@ export default function Signup({navigation}){
   return (
     <SafeAreaProvider>
       <View style={styles.viewWrapper}>
-      <Text style={styles.title}>Sign up</Text>
+      <Text style={styles.title}>{t("common:signup")}</Text>
         <Text style={styles.subtitle}>
-        Welcome! Please enter your Name, email and password to create your account.
+        {t("common:SignupSub")}
         </Text>
         <TextInput
           value={name}
-          placeholder="Full Name"
+          placeholder={t("common:FullName")}
           placeholderTextColor={"#828F9C"}
           onChangeText={setName}
           style={styles.input}
         />
         <TextInput
           value={email}
-          placeholder="Email Address"
+          placeholder={t("common:Email")}
           placeholderTextColor={"#828F9C"}
           onChangeText={setEmail}
           style={styles.input}
         />
         <TextInput
           value={phone}
-          placeholder="Phone number"
+          placeholder={t("common:Phonenumber")}
           placeholderTextColor={"#828F9C"}
           onChangeText={setPhone}
           style={styles.input}
         />
         <TextInput
           value={password}
-          placeholder="Your Password"
+          placeholder={t("common:yourPassword")}
           placeholderTextColor={"#828F9C"}
           onChangeText={setPassword}
           secureTextEntry={passwordHidden}
@@ -95,15 +97,15 @@ export default function Signup({navigation}){
         >
           {loading ? 
             <ActivityIndicator color={"#000"} size={'large'} style={{marginVertical:"1%"}}/>:
-            <Text style={styles.buttonText}>Sign Up</Text>
+            <Text style={styles.buttonText}>{t("common:signup")}</Text>
           }
         </TouchableOpacity>
         <View style={{flexDirection:"row", position:"absolute", top:height, left:width*0.25}}>
-            <Text>Already have an account? </Text>
+            <Text>{t("common:yesAccount")}</Text>
             <TouchableOpacity
               onPress={() => navigation.navigate("Login")}
             >
-              <Text style={styles.secondaryButton}>Login</Text>
+              <Text style={styles.secondaryButton}>{t("common:login")}</Text>
             </TouchableOpacity>
           </View>
 {/*         

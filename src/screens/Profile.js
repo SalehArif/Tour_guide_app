@@ -4,10 +4,12 @@ import auth from '@react-native-firebase/auth';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { horizontalScale, moderateScale, verticalScale } from '../helpers/Metrics';
+import { useTranslation } from 'react-i18next';
 
 const Profile = ({navigation}) => {
 	const [user, setUser] = React.useState(auth().currentUser)
   const [image, setImage] = React.useState(user.photoURL)
+  const { t } = useTranslation()
 
   return (
     <View style={styles.viewWrapper}>
@@ -15,7 +17,7 @@ const Profile = ({navigation}) => {
 				<TouchableOpacity onPress={()=>navigation.goBack()} >
 					<Ionicons name='chevron-back' size={24} style={{borderRadius:50, borderWidth:1, borderColor:"#E2E2E2", backgroundColor:"white", marginLeft:"2%", padding:"1%", alignSelf:"flex-start"}} />
 				</TouchableOpacity>
-				<Text style={[styles.title,{ fontSize:20}]} >Profile</Text>
+				<Text style={[styles.title,{ fontSize:20}]} >{t("common:Profile")}</Text>
 				<Ionicons name='settings-sharp' onPress={()=>navigation.navigate("Settings")} size={24} color={"#333"} style={{ marginLeft:"2%", padding:"1%", }} />
 			</View>
 			<View style={{alignItems:"center", marginTop:"20%"}} >
@@ -26,12 +28,12 @@ const Profile = ({navigation}) => {
 				<Text style={[styles.subtitle,{color:"#000", fontSize:20, marginTop:"3%"}]} >{auth().currentUser?.displayName ?? "User" }</Text>
 				<View style={{flexDirection:"row", alignItems:"center",}}>
 					<Ionicons name='location-sharp' size={16} color={"red"} />
-					<Text style={[styles.subtitle, {color:"red", paddingHorizontal:0, marginBottom:0}]}>Current Location</Text>
+					<Text style={[styles.subtitle, {color:"red", paddingHorizontal:0, marginBottom:0}]}>{t("common:CurrentLocation")}</Text>
 				</View>
 			</View>
 				<TouchableOpacity style={styles.mainButton} onPress={()=>navigation.navigate("EditProfile")}>
 					<MaterialCommunityIcons name='account-edit' size={20} />
-					<Text style={styles.buttonText}>Edit Profile</Text>
+					<Text style={styles.buttonText}>{t("common:EditProfile")}</Text>
 				</TouchableOpacity>
     </View>
   )
