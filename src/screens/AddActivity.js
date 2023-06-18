@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Image, TextInput, FlatList, Linking, ToastAndroid, Modal } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Image, TextInput, FlatList, Linking, ToastAndroid, Modal, KeyboardAvoidingView } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
@@ -10,6 +10,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import { ActivityIndicator } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import DatePicker from 'react-native-date-picker'
 import { API_KEY } from "@env"
 
 const AddActivity = ({navigation, route}) => {
@@ -17,10 +18,13 @@ const AddActivity = ({navigation, route}) => {
 	const [loading, setLoading] = React.useState(false)
 	const [place, setPlace] = React.useState("");
 	const [activityName, setActivityName] = React.useState("");
-	const [activityTime, setActivityTime] = React.useState("");
+	const [activityTime, setActivityTime] = React.useState(new Date());
 	const [activities, setActivities] = React.useState([]);
 	const [city, setCity] = React.useState("");
 	const [location, setLocation] = React.useState()
+	const [date, setDate] = React.useState(new Date())
+	const [open, setOpen] = React.useState(false)
+  
 	const {t} = useTranslation();
 
 	
@@ -28,13 +32,13 @@ const AddActivity = ({navigation, route}) => {
 		// setCity("")
 		// setLocation()
 		setActivityName("")
-		setActivityTime("")
+		setActivityTime(new Date())
 		setPlace("")
 		setImage(null)
 	  }
 
 	const chooseImage = async ()=>{
-		const result = await launchImageLibrary({includeBase64:true, mediaType:"photo", quality:0.5});
+		const result = await launchImageLibrary({includeBase64:true, mediaType:"photo", quality:0.1});
 		if(result.assets){
 			setImage(result.assets[0])
 		}
@@ -42,15 +46,20 @@ const AddActivity = ({navigation, route}) => {
 
 	const addactivity = ()=>{
 		// add schedule id as well
-		setActivities(prevState => 
-			[...prevState, 
-			{activityName, activityTime, place, city, image:`data:image/${image.type};base64,${image.base64}`, location, schedule_id:route.params.scheduleId }
-			] )
-		resetFields()
+		setLoading(true)
+		if(image !== null && location !== null){
+			setActivities(prevState => 
+				[...prevState, 
+					{activityName, activityTime, place, city, image:`data:image/${image.type};base64,${image.base64}`, location, schedule_id:route.params.scheduleId}
+				] )
+			resetFields()
+		}
+		setLoading(false)
 	}
 
 	const addactivityToDB = async ()=>{
 		// Create a new batch instance
+		setLoading(true)
 		const batch = firestore().batch();
 		activities.forEach(item => {
 			var docRef = firestore().collection("activities").doc(); //automatically generate unique id
@@ -61,9 +70,12 @@ const AddActivity = ({navigation, route}) => {
 			const result = await batch.commit();
 			resetFields()
 			setActivities([])
+			ToastAndroid.showWithGravity("Schedule Added Succesfully", ToastAndroid.SHORT, ToastAndroid.BOTTOM)	
 		} catch (error) {
 			console.log(error)
+			ToastAndroid.showWithGravity("Schedule couldn't be added. You may have to select a different image", ToastAndroid.LONG, ToastAndroid.BOTTOM)
 		}
+		setLoading(false)
 	}
 
 
@@ -83,6 +95,7 @@ const AddActivity = ({navigation, route}) => {
   return (
 		<View style={styles.viewWrapper}>
 			<StatusBar barStyle={"dark-content"} backgroundColor={loading ? "#0007":"#f2f2f2"}/>
+			<KeyboardAvoidingView behavior={"position"} keyboardVerticalOffset={0}>
 			<View style={{flexDirection:"row", alignItems:"center"}}>
 					<TouchableOpacity onPress={()=>navigation.goBack()} >
 							<Ionicons name='chevron-back' size={24} style={{borderRadius:50, borderWidth:1, borderColor:"#E2E2E2", backgroundColor:"white", marginLeft:"2%", padding:"1%", alignSelf:"flex-start"}} />
@@ -115,10 +128,25 @@ const AddActivity = ({navigation, route}) => {
 					style={{backgroundColor:"white", borderWidth:1, borderRadius:20, borderColor:"#DBDBDB", width:"95%", marginHorizontal:"2%" ,paddingLeft:"6%", marginVertical:"1%" }}
 				/>
 				<TextInput
-					value={activityTime}
+					value={activityTime.toLocaleTimeString({ hour: 'numeric', minute: 'numeric', hour12: true })}
 					placeholder={t("common:ActivityTime")}
+					onPressIn={()=>setOpen(true)}
 					onChangeText={setActivityTime}
 					style={{backgroundColor:"white", borderWidth:1, borderRadius:20, borderColor:"#DBDBDB", width:"95%", marginHorizontal:"2%" ,paddingLeft:"6%", marginVertical:"1%" }}
+				/>
+				<DatePicker
+					modal
+					minuteInterval={15}
+					minimumDate={new Date()}
+					open={open}
+					date={activityTime}
+					onConfirm={(date) => {
+					setOpen(false)
+					setActivityTime(date)
+					}}
+					onCancel={() => {
+					setOpen(false)
+					}}
 				/>
 				<View style={{flexDirection:"row", alignItems:"center", marginHorizontal:"5%", marginVertical:"2%"}}>
 					<Ionicons name='location-sharp' size={22} color={"red"} />
@@ -181,10 +209,10 @@ const AddActivity = ({navigation, route}) => {
 								<Text style={{fontWeight:"500", color:"#000", fontSize:14, marginBottom:"4%"}} >{item.city}</Text>
 							</View>
 							<Text style={{fontWeight:"500", color:"#000", fontSize:14, marginBottom:"4%"}}>{t("common:Activity")} {item.activityName}</Text>
-							<Text style={{fontWeight:"500", color:"#000", fontSize:14, marginBottom:"4%"}}>{t("common:Time")} {item.activityTime}</Text>
-							<TouchableOpacity onPress={()=>openMaps(item.location)}  style={{flexDirection:"row", justifyContent:"space-evenly", borderRadius:30, backgroundColor:"#F8F8F8", borderColor:"#DFDFDF", paddingHorizontal:"2%", paddingVertical:"2%", borderWidth:2 }} >
+							<Text style={{fontWeight:"500", color:"#000", fontSize:14, marginBottom:"4%"}}>{t("common:Time")} {item.activityTime.toLocaleTimeString()}</Text>
+							<TouchableOpacity onPress={()=>openMaps(item.location)}  style={{flexDirection:"row", alignItems:"center", justifyContent:"space-evenly", borderRadius:30, backgroundColor:"#F8F8F8", borderColor:"#DFDFDF", paddingHorizontal:"2%", paddingVertical:"2%", borderWidth:2 }} >
 								<MaterialCommunityIcons name='directions-fork' size={15} color={"#1976D2"} />
-								<Text style={{color:"#1976D2" }} >{t("common:Directions")}</Text>
+								<Text style={{color:"#1976D2", fontSize:15 }} >{t("common:Directions")}</Text>
 								<FontAwesome name='angle-double-right' size={15}  />
 							</TouchableOpacity>
 						</View>
@@ -195,6 +223,19 @@ const AddActivity = ({navigation, route}) => {
 			<TouchableOpacity style={styles.mainButton} onPress={addactivityToDB} >
 				<Text style={styles.buttonText} >{t("common:AddSchedule")}</Text>
 			</TouchableOpacity>
+			</KeyboardAvoidingView>
+			<Modal
+				visible={loading}
+				animationType="slide"
+				transparent={true}
+				style={{backgroundColor:"#0007", alignItems:"center"}}
+			>
+				<View style={styles.centeredView}>
+					<View style={styles.modalView}>
+						<ActivityIndicator size={moderateScale(100)} color={"#fff"} />
+					</View>
+				</View>
+			</Modal>
     </View>
   )
 }

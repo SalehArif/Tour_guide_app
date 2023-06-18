@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Image, TextInput, ToastAndroid, Modal } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, StatusBar, Image, TextInput, ToastAndroid, Modal, KeyboardAvoidingView } from 'react-native'
 import React from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -22,7 +22,7 @@ const AddSchedule = ({navigation}) => {
 
 
 	const chooseImage = async ()=>{
-		const result = await launchImageLibrary({includeBase64:true, mediaType:"photo", quality:0.5});
+		const result = await launchImageLibrary({includeBase64:true, mediaType:"photo", quality:0.1});
 		if(result.assets){
 			setImage(result.assets[0])
 		}
@@ -63,6 +63,7 @@ const AddSchedule = ({navigation}) => {
   return (
     <View style={styles.viewWrapper}>
 			<StatusBar barStyle={"dark-content"} backgroundColor={loading ? "#0007":"#f2f2f2"}/>
+			<KeyboardAvoidingView behavior={"position"} keyboardVerticalOffset={100}>
 			<View style={{flexDirection:"row", alignItems:"center"}}>
 					<TouchableOpacity onPress={()=>navigation.goBack()} >
 							<Ionicons name='chevron-back' size={24} style={{borderRadius:50, borderWidth:1, borderColor:"#E2E2E2", backgroundColor:"white", marginLeft:"2%", padding:"1%", alignSelf:"flex-start"}} />
@@ -138,6 +139,7 @@ const AddSchedule = ({navigation}) => {
 			<TouchableOpacity style={styles.mainButton} onPress={()=>{addScheduleToDB(); }}>
 				<Text style={styles.buttonText}>{t("common:Next")}</Text>
 			</TouchableOpacity>
+			</KeyboardAvoidingView>
 			<Modal
 				visible={loading}
 				animationType="slide"

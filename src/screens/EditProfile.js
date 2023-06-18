@@ -21,7 +21,7 @@ const EditProfile = ({navigation}) => {
   const { t } = useTranslation()
 
 	const chooseImage = async ()=>{
-		const result = await launchImageLibrary({includeBase64:true, mediaType:"photo", quality:0.5});
+		const result = await launchImageLibrary({includeBase64:true, mediaType:"photo", quality:0.1});
 		if(result.assets){
 			setImage(result.assets[0])
 		}

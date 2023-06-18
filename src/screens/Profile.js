@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
 import auth from '@react-native-firebase/auth';
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { horizontalScale, moderateScale, verticalScale } from '../helpers/Metrics';
 import { useTranslation } from 'react-i18next';
@@ -31,10 +32,16 @@ const Profile = ({navigation}) => {
 					<Text style={[styles.subtitle, {color:"red", paddingHorizontal:0, marginBottom:0}]}>{t("common:CurrentLocation")}</Text>
 				</View>
 			</View>
-				<TouchableOpacity style={styles.mainButton} onPress={()=>navigation.navigate("EditProfile")}>
+				<TouchableOpacity style={styles.mainButton1} onPress={()=>navigation.navigate("EditProfile")}>
 					<MaterialCommunityIcons name='account-edit' size={20} />
-					<Text style={styles.buttonText}>{t("common:EditProfile")}</Text>
+					<Text style={styles.buttonText1}>{t("common:EditProfile")}</Text>
 				</TouchableOpacity>
+        <View style={{marginTop:"12%"}}>
+          <TouchableOpacity style={styles.mainButton} onPress={()=>navigation.navigate("AddSchedule")}>
+            <Text style={styles.buttonText}>{t("common:AddSchedule")}</Text>
+            <FontAwesome name='angle-double-right' size={25} />
+          </TouchableOpacity>
+        </View>
     </View>
   )
 }
@@ -59,11 +66,11 @@ const styles = StyleSheet.create({
     paddingHorizontal:"4%",
     marginBottom:"3%"
   },
-	mainButton: {
+	mainButton1: {
     backgroundColor:"#EAEAEA", borderRadius:30, marginHorizontal:"20%",
     marginTop:"4%", paddingVertical:"2%", flexDirection:"row", alignItems:"center", justifyContent:"center"
   },
-  buttonText:{
+  buttonText1:{
     fontFamily: 'DM Sans',
     fontStyle: "normal",
     fontWeight: 700,
@@ -73,5 +80,18 @@ const styles = StyleSheet.create({
     color: "#101018",
     marginVertical:"2%",
 		marginLeft:"2%"
+},mainButton: {
+  borderWidth:1, borderColor:"#3CDD8E", backgroundColor:"#72F8B6", borderRadius:50, marginHorizontal:"8%",
+  marginTop:"6%", paddingVertical:"6%", flexDirection:"row", alignItems:"center", justifyContent:"space-around"
+},
+buttonText:{
+  fontFamily: 'DM Sans',
+  fontStyle: "normal",
+  fontWeight: 700,
+  fontSize: 16,
+  lineHeight: 33,
+  textAlign: "center",
+  color: "#101018",
+  marginVertical:"2%"
 },
 })

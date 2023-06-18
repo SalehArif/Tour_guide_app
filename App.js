@@ -35,11 +35,11 @@ const App = () => {
      );
    }
 
-   // <UserTabs />
    return (
      <NavigationContainer>
         <StatusBar barStyle={"dark-content"} backgroundColor={"#f2f2f2"}/>
         <AdminTabs/>
+        {/* <UserTabs /> */}
     </NavigationContainer>
    );
 };

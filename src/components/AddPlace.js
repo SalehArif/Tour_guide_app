@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Image, ScrollView, ActivityIndicator, ToastAndroid, Modal, StatusBar } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Image, ScrollView, ActivityIndicator, ToastAndroid, Modal, StatusBar, KeyboardAvoidingView } from 'react-native'
 import React from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import AntDesign from 'react-native-vector-icons/AntDesign'
@@ -11,8 +11,10 @@ import { API_KEY } from "@env"
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 import { horizontalScale, moderateScale, verticalScale } from '../helpers/Metrics'
-import { LogoutButton } from './LogoutButton';
 import RadioButton from './RadioBtn';
+import { AvoidSoftInput  } from "react-native-avoid-softinput";
+import { useFocusEffect } from "@react-navigation/native";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 const AddPlace = () => {
 	// const [users,setUsers] = React.useState("")
@@ -24,10 +26,23 @@ const AddPlace = () => {
 	const [googlePlace, setGooglePlace] = React.useState("");
   const [showModal, setModal] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
+  const [disabled, setDisabled] = React.useState(true)
 	const {t} = useTranslation();
 	
+  // const onFocusEffect = React.useCallback(() => {
+  //   // This should be run when screen gains focus - enable the module where it's needed
+  //   AvoidSoftInput.setShouldMimicIOSBehavior(true);
+  //   AvoidSoftInput.setEnabled(true);
+  //   return () => {
+  //     // This should be run when screen loses focus - disable the module where it's not needed, to make a cleanup
+  //     AvoidSoftInput.setEnabled(false);
+  //     AvoidSoftInput.setShouldMimicIOSBehavior(false);
+  //   };
+  // }, []);
+  // useFocusEffect(onFocusEffect); // register callback to focus events
+
 	const chooseImage = async ()=>{
-		const result = await launchImageLibrary({includeBase64:true, mediaType:"photo", quality:0.5});
+		const result = await launchImageLibrary({includeBase64:true, mediaType:"photo", quality:0.1});
 		if(result.assets){
 			setImage(result.assets[0])
 		}
@@ -83,6 +98,7 @@ const AddPlace = () => {
     <View style={styles.viewWrapper}>
       <StatusBar barStyle={"dark-content"} backgroundColor={showModal ? "#0007":"#f2f2f2"}/>
       {/* <ScrollView> */}
+      <KeyboardAvoidingView behavior={"position"} keyboardVerticalOffset={50}>
       <Text style={styles.subtitle}>{t("common:AddPlacesSub")}</Text>
       <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between", backgroundColor:"white" ,borderWidth:1, borderColor:"#ccc", borderRadius:50,marginVertical:"3%", paddingLeft:"6%", paddingVertical:"0.25%"}}>
         {/* <TextInput
@@ -96,7 +112,12 @@ const AddPlace = () => {
             placeholder={t("common:locate")}
             onPress={(data, details = null) => {
               // 'details' is provided when fetchDetails = true
-              setCity(data)
+              if(data.terms.length == 3)
+                setCity(data.terms[0].value+" "+data.terms[2].value)
+              else if(data.terms.length == 2)
+                setCity(data.terms[0].value+" "+data.terms[1].value)
+              else
+                setCity(data.terms[0].value)
               console.log(data, details);
             }}
             disableScroll={true}
@@ -140,6 +161,7 @@ const AddPlace = () => {
       <TextInput
         value={place}
         placeholder={t("common:namePlace")}
+        onPressIn={()=>setDisabled(true)}
         onChangeText={setPlace}
         placeholderTextColor={"#616163"}
         style={{backgroundColor:"white", borderWidth:1, borderRadius:20, borderColor:"#DBDBDB", width:"95%", marginHorizontal:"2%" ,paddingLeft:"6%",}}
@@ -157,7 +179,12 @@ const AddPlace = () => {
             placeholder={t("common:locationPlace")}
             onPress={(data, details = null) => {
               // 'details' is provided when fetchDetails = true
-              setGooglePlace(data)
+              // if(data.terms.length == 3)
+              //   setGooglePlace(data.terms[0].value+" "+data.terms[2].value)
+              // else if(data.terms.length == 2)
+              //   setGooglePlace(data.terms[0].value+" "+data.terms[1].value)
+              // else
+              setGooglePlace(data.description)
               console.log(data, details);
             }}
             disableScroll={true}
@@ -179,6 +206,7 @@ const AddPlace = () => {
           <Text style={styles.buttonText}>{t("common:AddPlace")}</Text>
         }
 			</TouchableOpacity>
+      </KeyboardAvoidingView>
       {/* </ScrollView> */}
       <Modal 
         animationType="slide"

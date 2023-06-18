@@ -38,7 +38,6 @@ const UserLandingPage = ({navigation}) => {
 		setLoading(true)
     await firestore()
     .collection('cities')
-    .limit(5)
     .get()
     .then(querySnapshot => {
       let docs = []
@@ -58,31 +57,37 @@ const UserLandingPage = ({navigation}) => {
       getCities()
 	},[search])
 
-  useEffect(()=>{
-    setuser(auth().currentUser)
-    getCities()
-  },[])
-
   // useEffect(()=>{
-  //   const subscriber = firestore()
-  //   .collection('cities')
-  //   .limit(10)
-  //   .onSnapshot(querySnapshot => {
-  //     let docs = []
-	// 		querySnapshot.forEach(documentSnapshot => {
-	// 			docs.push(documentSnapshot.data())
-	// 		});
-	// 		setResults(docs)
-  //   });
+  //   setuser(auth().currentUser)
+  //   getCities()
+  // },[])
 
-  //   return () => subscriber();
-  // }, [results])
+  useEffect(() => {
+    setuser(auth().currentUser)
+    setLoading(true)
+    const subscriber = firestore()
+      .collection('cities')
+      .onSnapshot(querySnapshot => {
+        const docs = [];
+  
+        querySnapshot.forEach(documentSnapshot => {
+          documentSnapshot.data().id = documentSnapshot.id
+          docs.push(documentSnapshot.data())
+        });
+        setResults(docs);
+        setLoading(false);
+      });
+  
+    // Unsubscribe from events when no longer in use
+    return () => subscriber();
+  }, []);
+  
   
   return (
     <View style={styles.viewWrapper}>
       <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between", marginHorizontal:"2%", marginBottom:"4%"}}>
         <View style={{flexDirection:"row", alignItems:"center",}}>
-          <Ionicons name='md-menu' size={28} color={"#2D302E"}/>
+          <Ionicons name='md-menu' size={28} color={"#2D302E"} onPress={()=> navigation.navigate("Settings")}/>
           <View style={{justifyContent:"center", marginHorizontal:"10%"}}>
             <Text style={[styles.title,{fontSize:20, paddingHorizontal:0}]}>{t("common:greet")}{user?.displayName ? `, ${user?.displayName?.split(" ")[0]}!`:""}</Text>
             <View style={{flexDirection:"row", alignItems:"center",}}>
@@ -143,8 +148,6 @@ const UserLandingPage = ({navigation}) => {
             </TouchableOpacity>
         </View>
       <Text style={styles.subtitle}>{t("common:MainSub")}</Text>
-      {/* <Button title={"gawk"} onPress={()=>{axios.get("https://us-central1-tour-guide-app-2c866.cloudfunctions.net/sendMail?dest=saleharif109@gmail.com&code=1234").then(res => console.log(res.data))}}/> */}
-      {/* <Button title={"reset"} onPress={ async ()=>{console.log(user)}}/> */}
       <FlatList
 				data={results}
 				key={(item,index)=>index}
@@ -160,6 +163,7 @@ const UserLandingPage = ({navigation}) => {
             }
           </View>
         }
+        initialNumToRender={5}
 				renderItem={({item, index})=> (
 					<TouchableOpacity onPress={()=>navigation.navigate("DetailPage", {city:item})}  style={{height:verticalScale(280), width:horizontalScale(320), marginLeft:"3%", marginBottom:"4%"}} >
 						 <Image

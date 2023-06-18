@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Image, ScrollView, StatusBar, Modal, ToastAndroid } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Image, Platform, KeyboardAvoidingView, ScrollView, StatusBar, Modal, ToastAndroid } from 'react-native'
 import React from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -19,7 +19,7 @@ const AddCity = ({navigation}) => {
 	const [loading, setLoading] = React.useState(false)
 
 	const chooseImage = async ()=>{
-		const result = await launchImageLibrary({includeBase64:true, mediaType:"photo", quality:0.5});
+		const result = await launchImageLibrary({includeBase64:true, mediaType:"photo", quality:0.1});
 		if(result.assets){
 			setImage(result.assets[0])
 		}
@@ -55,6 +55,7 @@ const AddCity = ({navigation}) => {
     <View style={styles.viewWrapper}>
 		<StatusBar barStyle={"dark-content"} backgroundColor={loading ? "#0007":"#f2f2f2"}/>
 		{/* <ScrollView> */}
+		<KeyboardAvoidingView behavior={"position"} keyboardVerticalOffset={100}>
 			<Text style={styles.subtitle}>{t("common:add_city_subtitle")}</Text>
 			<TouchableOpacity onPress={chooseImage} 
 			style={{alignItems:"center" ,backgroundColor:"#F0F4F4", borderColor:"white", borderWidth:2, borderRadius:10, padding:image? 0:"16%"}}>
@@ -87,14 +88,15 @@ const AddCity = ({navigation}) => {
 						setCity(data.terms[0].value)
 					console.log(data);
 					}}
+					disableScroll={true}
 					query={{
-					key: API_KEY,
-					language: 'en',
+						key: API_KEY,
+						language: 'en',
 					}}
 					styles={{
-					textInputContainer:{
-						backgroundColor:"white", borderWidth:1, borderRadius:50, borderColor:"#DBDBDB", paddingVertical:"1%",marginHorizontal:"2%" ,paddingHorizontal:"4%",
-					},
+						textInputContainer:{
+							backgroundColor:"white", borderWidth:1, borderRadius:50, borderColor:"#DBDBDB", paddingVertical:"1%",marginHorizontal:"2%" ,paddingHorizontal:"4%",
+						},
 					}}
 				/>
 			</View>
@@ -105,11 +107,13 @@ const AddCity = ({navigation}) => {
 				placeholder={t("common:WriteDescription")}
 				textAlignVertical="top"
 				style={{backgroundColor:"#F0F4F4", marginHorizontal:"4%", marginVertical:"2%",borderColor:"white", borderWidth:2,paddingLeft:"6%", paddingTop:"6%", borderRadius:20, height:verticalScale(150)}}
-			/>
+				/>
+
 			<TouchableOpacity style={styles.mainButton} onPress={()=>{navigation.navigate("PreviewAddedCity", { city: 
 				{image:image.base64,imageType:image.type,city:city,description:description}, addCityToDB }); }}>
 				<Text style={styles.buttonText}>{t("common:AddtheCity")}</Text>
 			</TouchableOpacity>
+			</KeyboardAvoidingView>
 			{/* </ScrollView> */}
 			<Modal
 				visible={loading}

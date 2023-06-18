@@ -37,7 +37,7 @@ const LikedSchedules = ({navigation}) => {
         documentSnapshot.data().id = documentSnapshot.id
         doc.push(documentSnapshot.data())
       });
-      console.log(docs)
+      // console.log(docs)
       setResults(doc)
       setLoading(false)
     });

@@ -89,7 +89,7 @@ const PlacesToVisit = ({navigation, route}) => {
           </View>
         }
         renderItem={({item,index})=>
-          <View style={{borderRadius:10, borderColor:"#DBDBDB", borderWidth:1, paddingHorizontal:"2%", paddingVertical:"4%", marginVertical:"1%", width:horizontalScale(200), height:verticalScale(270)}} >
+          <View style={{borderRadius:10, borderColor:"#DBDBDB", borderWidth:1, paddingHorizontal:"2%", paddingVertical:"4%", marginHorizontal:horizontalScale(10), marginVertical:"1%", width:horizontalScale(200), height:verticalScale(270)}} >
             <Image source={{uri:item.image}} resizeMode={"contain"} style={{width:horizontalScale(180), height:verticalScale(200), marginLeft:"3%", borderRadius:10}} />
             <Text style={{ fontWeight:"bold", fontSize: 20, color:"#101018",marginLeft:"10%"}} >{item.place}</Text>
             <View style={{marginLeft:"7%"}} >

@@ -21,7 +21,7 @@ export default function AdminTopTabs() {
     <>
     <View style={{ ...styles.viewWrapper, flexDirection:"row", alignItems:"center", justifyContent:"space-between", backgroundColor:"#f2f2f2", marginHorizontal:"2%"}}>
         <View style={{flexDirection:"row", alignItems:"center",}}>
-          <Ionicons name='md-menu' size={28} color={"#2D302E"}/>
+          <Ionicons onPress={()=> navigation.navigate("Settings")} name='md-menu' size={28} color={"#2D302E"}/>
           <View style={{justifyContent:"center", marginHorizontal:"10%"}}>
             <Text style={[styles.title,{fontSize:20, paddingHorizontal:0}]}>{t("common:greet")}{user?.displayName ? `, ${user?.displayName?.split(" ")[0]}!`:""}</Text>
             <View style={{flexDirection:"row", alignItems:"center",}}>

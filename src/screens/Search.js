@@ -34,7 +34,6 @@ const Search = ({navigation}) => {
 		setLoading(true)
     await firestore()
     .collection('cities')
-    .limit(5)
     .get()
     .then(querySnapshot => {
       let docs = []
@@ -54,10 +53,25 @@ const Search = ({navigation}) => {
       getCities()
 	},[search])
 
-  useEffect(()=>{
-    getCities()
-  },[])
 
+  useEffect(() => {
+    setLoading(true)
+    const subscriber = firestore()
+      .collection('cities')
+      .onSnapshot(querySnapshot => {
+        const docs = [];
+  
+        querySnapshot.forEach(documentSnapshot => {
+          documentSnapshot.data().id = documentSnapshot.id
+          docs.push(documentSnapshot.data())
+        });
+        setResults(docs);
+        setLoading(false);
+      });
+  
+    // Unsubscribe from events when no longer in use
+    return () => subscriber();
+  }, []);
 
   return (
     <View style={styles.viewWrapper}>

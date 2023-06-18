@@ -35,7 +35,7 @@ const PreviewAddedCity = ({navigation, route}) => {
 		<View style={styles.viewWrapper}>
 			<View style={{ flexDirection:"row", alignItems:"center", justifyContent:"space-between", backgroundColor:"#f2f2f2", marginHorizontal:"2%"}}>
 					<View style={{flexDirection:"row", alignItems:"center",}}>
-						<Ionicons name='md-menu' size={28} color={"#2D302E"}/>
+						<Ionicons name='md-menu' size={28} color={"#2D302E"} onPress={()=> navigation.navigate("Settings")}/>
 						<View style={{justifyContent:"center", marginHorizontal:"10%"}}>
 							<Text style={[styles.title,{ paddingHorizontal:0}]}>{t("common:greet")}{user?.displayName ? `, ${user?.displayName?.split(" ")[0]}!`:""}</Text>
 							<View style={{flexDirection:"row", alignItems:"center",}}>
