@@ -11,7 +11,8 @@ import { ActivityIndicator } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import DatePicker from 'react-native-date-picker'
-import { API_KEY } from "@env"
+import axios from 'axios'
+import { API_KEY, SERVER_KEY } from "@env"
 
 const AddActivity = ({navigation, route}) => {
 	const [image, setImage] = React.useState()
@@ -22,8 +23,9 @@ const AddActivity = ({navigation, route}) => {
 	const [activities, setActivities] = React.useState([]);
 	const [city, setCity] = React.useState("");
 	const [location, setLocation] = React.useState()
-	const [date, setDate] = React.useState(new Date())
+	// const [date, setDate] = React.useState(new Date())
 	const [open, setOpen] = React.useState(false)
+	const [enabled, setenabled] = React.useState(false)
   
 	const {t} = useTranslation();
 
@@ -50,7 +52,7 @@ const AddActivity = ({navigation, route}) => {
 		if(image !== null && location !== null){
 			setActivities(prevState => 
 				[...prevState, 
-					{activityName, activityTime, place, city, image:`data:image/${image.type};base64,${image.base64}`, location, schedule_id:route.params.scheduleId}
+					{activityName, activityTime:activityTime.toLocaleTimeString({ hour: 'numeric', minute: 'numeric', hour12: true }), place, city, image:`data:image/${image.type};base64,${image.base64}`, location, schedule_id:route.params.scheduleId}
 				] )
 			resetFields()
 		}
@@ -65,17 +67,65 @@ const AddActivity = ({navigation, route}) => {
 			var docRef = firestore().collection("activities").doc(); //automatically generate unique id
 			batch.set(docRef, item);
 		})
-
+				
 		try {
 			const result = await batch.commit();
 			resetFields()
 			setActivities([])
+			sendNotif()	
 			ToastAndroid.showWithGravity("Schedule Added Succesfully", ToastAndroid.SHORT, ToastAndroid.BOTTOM)	
+			navigation.popToTop()
 		} catch (error) {
 			console.log(error)
 			ToastAndroid.showWithGravity("Schedule couldn't be added. You may have to select a different image", ToastAndroid.LONG, ToastAndroid.BOTTOM)
 		}
 		setLoading(false)
+	}
+
+	const sendNotif = ()=>{
+		var notif = {
+			title:"New Schedule Added",
+			body:"Review the schedule to approve or reject.",
+			navigate:"ViewSchedule",
+			data:{
+				scheduleId:route.params.scheduleId,
+				loadData:true,
+				unApproved:true
+			}
+		}
+		const batch = firestore().batch();
+		
+		firestore()
+		.collection('users')
+		.where("isAdmin","==",true)
+		.get().then(async querySnapshot => {
+			// console.log('Total users: ', querySnapshot.size);
+			let docs = []
+			querySnapshot.forEach(documentSnapshot => {
+				var docRef = firestore().collection("notifications").doc(); //automatically generate unique id
+				notif.user = documentSnapshot.data().uid
+				batch.set(docRef, notif);
+				axios.post("https://fcm.googleapis.com/fcm/send", {
+					"to":documentSnapshot.data().notifToken,
+					"data":{
+						"body":notif.body,
+						"title":notif.title,
+						data:notif.data,
+						navigate:notif.navigate
+					}
+				  }, {
+					headers: {
+					withCredentials:true, 
+					  Authorization: `Bearer ${SERVER_KEY}`,
+					}
+				  })
+			//   documentSnapshot.data().id = documentSnapshot.id
+			//   docs.push(documentSnapshot.data())
+			  // console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
+			});
+			const result = await batch.commit();
+		});
+
 	}
 
 
@@ -127,22 +177,21 @@ const AddActivity = ({navigation, route}) => {
 					onChangeText={setActivityName}
 					style={{backgroundColor:"white", borderWidth:1, borderRadius:20, borderColor:"#DBDBDB", width:"95%", marginHorizontal:"2%" ,paddingLeft:"6%", marginVertical:"1%" }}
 				/>
-				<TextInput
-					value={activityTime.toLocaleTimeString({ hour: 'numeric', minute: 'numeric', hour12: true })}
-					placeholder={t("common:ActivityTime")}
-					onPressIn={()=>setOpen(true)}
-					onChangeText={setActivityTime}
-					style={{backgroundColor:"white", borderWidth:1, borderRadius:20, borderColor:"#DBDBDB", width:"95%", marginHorizontal:"2%" ,paddingLeft:"6%", marginVertical:"1%" }}
-				/>
+				<TouchableOpacity onPress={()=>setOpen(true)}
+					style={{backgroundColor:"white", borderWidth:1, borderRadius:20, borderColor:"#DBDBDB", width:"95%", marginHorizontal:"2%", paddingVertical:"5%" ,paddingLeft:"6%", marginVertical:"1%" }}>
+					<Text>{enabled ? activityTime.toLocaleTimeString({ hour: 'numeric', minute: 'numeric', hour12: true }):t("common:ActivityTime")}</Text>
+				</TouchableOpacity>
 				<DatePicker
 					modal
 					minuteInterval={15}
 					minimumDate={new Date()}
 					open={open}
+					mode='time'
 					date={activityTime}
 					onConfirm={(date) => {
 					setOpen(false)
 					setActivityTime(date)
+					setenabled(true)
 					}}
 					onCancel={() => {
 					setOpen(false)
@@ -209,7 +258,7 @@ const AddActivity = ({navigation, route}) => {
 								<Text style={{fontWeight:"500", color:"#000", fontSize:14, marginBottom:"4%"}} >{item.city}</Text>
 							</View>
 							<Text style={{fontWeight:"500", color:"#000", fontSize:14, marginBottom:"4%"}}>{t("common:Activity")} {item.activityName}</Text>
-							<Text style={{fontWeight:"500", color:"#000", fontSize:14, marginBottom:"4%"}}>{t("common:Time")} {item.activityTime.toLocaleTimeString()}</Text>
+							<Text style={{fontWeight:"500", color:"#000", fontSize:14, marginBottom:"4%"}}>{t("common:Time")} {item.activityTime}</Text>
 							<TouchableOpacity onPress={()=>openMaps(item.location)}  style={{flexDirection:"row", alignItems:"center", justifyContent:"space-evenly", borderRadius:30, backgroundColor:"#F8F8F8", borderColor:"#DFDFDF", paddingHorizontal:"2%", paddingVertical:"2%", borderWidth:2 }} >
 								<MaterialCommunityIcons name='directions-fork' size={15} color={"#1976D2"} />
 								<Text style={{color:"#1976D2", fontSize:15 }} >{t("common:Directions")}</Text>

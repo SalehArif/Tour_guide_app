@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList,ToastAndroid } from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import AntDesign from 'react-native-vector-icons/AntDesign'
@@ -11,12 +11,31 @@ import { useTranslation } from 'react-i18next';
 
 const Notifications = ({navigation}) => {
   const [notifs, setNotifs] = React.useState([
-    {image:"https://img.freepik.com/premium-photo/image-colorful-galaxy-sky-generative-ai_791316-9864.jpg?w=1060", title:"Reminder from Calender", subtitle:"1 day remaining in your Denver,Colorado tour."},
-    {image:"https://img.freepik.com/premium-photo/image-colorful-galaxy-sky-generative-ai_791316-9864.jpg?w=1060", title:"From Admin", subtitle:"Congrats! your Melbourne schedule has been approved."},
-    {image:"https://img.freepik.com/premium-photo/image-colorful-galaxy-sky-generative-ai_791316-9864.jpg?w=1060", title:"Reminder from Calender", subtitle:"1 day remaining in your Kuala Lumper, Malaysia tour.",}])
+    { title:"Reminder from Calender", body:"1 day remaining in your Denver,Colorado tour."},
+    { title:"From Admin", body:"Congrats! your Melbourne schedule has been approved."},
+    { title:"Reminder from Calender", body:"1 day remaining in your Kuala Lumper, Malaysia tour.",}])
   const [loading, setLoading] = React.useState(false)
   const { t } = useTranslation()
+  const getNotifs = ()=>{
+    firestore()
+    .collection("notifcations")
+    .where("user","==", auth().currentUser.uid)
+    .get().then(querySnapshot => {
+      // console.log('Total users: ', querySnapshot.size);
+      let docs = []
+      querySnapshot.forEach( documentSnapshot => {
+        documentSnapshot.data().id = documentSnapshot.id
+        docs.push(documentSnapshot.data())
+        // console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
+      });
+      setNotifs(docs)
+      // console.log(docs)
+    })
+  }
 
+  useEffect(()=>{
+    getNotifs()
+  },[])
   return (
     <View style={styles.viewWrapper} >
       <View style={{flexDirection:"row", alignItems:"center", marginBottom:"10%"}}>
@@ -41,10 +60,10 @@ const Notifications = ({navigation}) => {
           }
           renderItem={({item,index})=>(
             <View style={{backgroundColor: index==0? "#84FDC1":"#E7E7E7", flexDirection:"row", alignItems:"center",paddingHorizontal:"2%", paddingLeft:"5%", marginTop:"2%",paddingVertical:"6%",borderRadius:10, }} >
-              <Image source={{uri: item.image}} style={{alignSelf:"flex-start" ,width:horizontalScale(30), height:verticalScale(30), borderRadius:50}} />
+              <Image source={require('../assets/user_icon.png')} style={{alignSelf:"flex-start" ,width:horizontalScale(30), height:verticalScale(30), borderRadius:50}} />
               <View style={{ paddingHorizontal:"1%", width:horizontalScale(300) }} >
                   <Text style={[styles.title, {fontSize:18, marginTop:0}]}>{item.title}</Text>
-                  <Text style={styles.subtitle}>{item.subtitle}</Text>
+                  <Text style={styles.subtitle}>{item.body}</Text>
               </View>
             </View>
           )}

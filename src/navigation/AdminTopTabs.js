@@ -9,7 +9,7 @@ const Tab = createMaterialTopTabNavigator();
 import auth from '@react-native-firebase/auth';
 import { useTranslation } from 'react-i18next';
 
-export default function AdminTopTabs() {
+export default function AdminTopTabs({navigation}) {
   const [user, setuser] = useState();
   const { t } = useTranslation()
 

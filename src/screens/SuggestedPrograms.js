@@ -9,7 +9,6 @@ import { Divider, ActivityIndicator } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 
 const SuggestedPrograms = ({navigation, route}) => {
-  const [favorited, setFavorite] = React.useState(false)
   const [schedules, setSchedules] = React.useState([])
   const [loading, setLoading] = React.useState(false)
   const { t } = useTranslation()
@@ -19,6 +18,7 @@ const SuggestedPrograms = ({navigation, route}) => {
     firestore()
     .collection("schedules")
     .where("city","==", route.params.city)
+    .where("type","==", "Suggested Schedule")
     .get().then(querySnapshot => {
       // console.log('Total users: ', querySnapshot.size);
       let docs = []
@@ -30,37 +30,6 @@ const SuggestedPrograms = ({navigation, route}) => {
       setSchedules(docs)
       setLoading(false)
     });
-  }
-
-  const addFavorite = async (id)=>{
-    try {
-      await firestore().collection('favorites').add({
-        user: auth().currentUser.uid,
-        favorite: id,
-        type:"Suggested Schedule"
-      })
-      setFavorite(true)
-      ToastAndroid.showWithGravity("Favorite added", ToastAndroid.SHORT, ToastAndroid.BOTTOM)
-    } catch (error) {
-      console.log(error)
-      ToastAndroid.showWithGravity("Favorite couldn't be updated", ToastAndroid.SHORT, ToastAndroid.BOTTOM)
-    }
-  }
-
-  const removeFavorite = async (id)=>{
-    try {
-      await firestore().collection('favorites').where('user', '==', auth().currentUser.uid).where('favorite', '==', id)
-      .get().then(function(querySnapshot) {
-        querySnapshot.forEach(function(doc) {
-          doc.ref.delete();
-        });
-      });
-      ToastAndroid.showWithGravity("Favorite removed", ToastAndroid.SHORT, ToastAndroid.BOTTOM)
-      setFavorite(false)
-    } catch (error) {
-      console.log(error)
-      ToastAndroid.showWithGravity("Favorite couldn't be updated", ToastAndroid.SHORT, ToastAndroid.BOTTOM)
-    }
   }
 
   React.useEffect(()=>{
@@ -97,22 +66,12 @@ const SuggestedPrograms = ({navigation, route}) => {
             </View>
             <View style={{flexDirection:"row", alignItems:"center", marginTop:"5%"}} >
                 <Image source={{uri: item.image}} style={{width:horizontalScale(180), height:verticalScale(150), borderWidth:2, borderColor:"#FFFFFF", borderRadius:20}} />
-            <View style={{alignItems:"center"}} >
-              {
-                favorited ?
-                <AntDesign name='heart' size={18} onPress={()=>{removeFavorite(item.id)}} color={"#F85454"} />:
-                <AntDesign name='hearto' size={18} onPress={()=>{addFavorite(item.id)}} color={"#000"} />
-              }
-              <TouchableOpacity style={{backgroundColor:"#E7E7E7", marginTop:"8%", paddingHorizontal:"4%", paddingVertical:"2%", borderRadius:20}} >
-                <Text onPress={()=> navigation.navigate("ViewSchedule", {schedule:item})} style={[styles.title, {fontSize:18, textAlign:"center"}]}>{t("common:ViewSchedule")}</Text>
+              <TouchableOpacity style={{backgroundColor:"#E7E7E7", marginTop:"2%", marginHorizontal:"2%", paddingHorizontal:"4%", paddingVertical:"2%", borderRadius:20, alignSelf:"flex-start"}} >
+                <Text onPress={()=> navigation.navigate("ViewSchedule", {schedule:item, isAdmin:true})} style={[styles.title, {fontSize:18, textAlign:"center", }]}>{t("common:ViewSchedule")}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={{backgroundColor:"#E7E7E7", marginTop:"4%", paddingHorizontal:"6%", paddingVertical:"10%", borderRadius:30}} >
-                <Text style={[styles.title, {fontSize:18, textAlign:"center"}]}>{t("common:AddCalender")}</Text>
-              </TouchableOpacity>
-            </View>
             </View>
               <Text style={{marginLeft:"2%", marginVertical:"2%"}} >
-                <Text style={styles.title}>{t("common:PlaceDescription")}</Text>
+                <Text style={styles.title}>{t("common:PlaceDescription")} </Text>
                 <Text style={styles.subtitle}>{item.description}</Text>
               </Text>
           </View>

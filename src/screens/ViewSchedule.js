@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, View, TextInput, Image, TouchableOpacity, FlatList, Linking, ScrollView, ToastAndroid } from 'react-native'
+import { StyleSheet, Text, View, TextInput, Image, TouchableOpacity, FlatList, Linking, ScrollView, Modal, ToastAndroid } from 'react-native'
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -15,6 +15,9 @@ const ViewSchedule = ({navigation, route }) => {
   const [schedule, setSchedule] = React.useState(route.params.schedule);
   const [loading, setLoading] = React.useState(false)
   const [favorited, setFavorite] = React.useState(false)
+  const [showModal, setModal] = React.useState(false)
+  const [Modalvisible, setModalvisible] = React.useState(false)
+
   const { t } = useTranslation()
 
   const addFavorite = async ()=>{
@@ -45,6 +48,20 @@ const ViewSchedule = ({navigation, route }) => {
     } catch (error) {
       console.log(error)
       ToastAndroid.showWithGravity("Favorite couldn't be updated", ToastAndroid.SHORT, ToastAndroid.BOTTOM)
+    }
+  }
+
+  const deleteSchedule = async ()=>{
+    try {
+      await firestore()
+      .collection('schedules')
+      .doc(schedule.id)
+      .delete()
+      ToastAndroid.showWithGravity("Schedule removed", ToastAndroid.SHORT, ToastAndroid.BOTTOM)
+      navigation.goBack()
+    } catch (error) {
+      console.log(error)
+      ToastAndroid.showWithGravity("Schedule couldn't be updated", ToastAndroid.SHORT, ToastAndroid.BOTTOM)
     }
   }
 
@@ -79,6 +96,24 @@ const ViewSchedule = ({navigation, route }) => {
     });
   }
 
+  const approveSchedule = ()=>{
+    try {
+      firestore()
+      .collection('schedules')
+      .doc(schedule.id)
+      .update({
+        type: "Community Schedule",
+      })
+      .then(() => {
+        console.log('User updated!');
+      });
+      navigation.goBack()
+      ToastAndroid.showWithGravity("Schedule approved", ToastAndroid.SHORT, ToastAndroid.BOTTOM)
+    } catch (error) {
+      ToastAndroid.showWithGravity("Schedule couldn't be updated", ToastAndroid.SHORT, ToastAndroid.BOTTOM)
+    }
+  }
+
   React.useEffect(()=>{
     getActivities()
   },[])
@@ -93,7 +128,11 @@ const ViewSchedule = ({navigation, route }) => {
       </View>
       <View>
         <Image source={{uri:schedule.image}} style={{width:horizontalScale(310), height:verticalScale(220), borderRadius:20, borderWidth:2, borderColor:"#D8D8D8", marginLeft:"5%", marginVertical:"4%", marginBottom:"1%"}} />
-        <AntDesign name='heart' size={18} onPress={()=>{favorited? removeFavorite():addFavorite() }} color={favorited ? "#F85454":"#fff"} style={{position:"absolute", top:verticalScale(30), right:horizontalScale(25), backgroundColor:"#0005", borderRadius:40, padding:"2%"}} />
+        {
+          route.params?.isAdmin ?
+          <MaterialCommunityIcons name='trash-can' size={18} onPress={()=>{setModal(true) }} color={favorited ? "#F85454":"#fff"} style={{position:"absolute", top:verticalScale(30), right:horizontalScale(25), backgroundColor:"#0005", borderRadius:40, padding:"2%"}} />:
+          <AntDesign name='heart' size={18} onPress={()=>{favorited? removeFavorite():addFavorite() }} color={favorited ? "#F85454":"#fff"} style={{position:"absolute", top:verticalScale(30), right:horizontalScale(25), backgroundColor:"#0005", borderRadius:40, padding:"2%"}} />
+        }
       </View>
       <View style={{marginLeft:"5%"}}>
         <View style={{flexDirection:"row", alignItems:"center"}}>
@@ -120,6 +159,7 @@ const ViewSchedule = ({navigation, route }) => {
             }
           </View>
         }
+        style={{height:verticalScale(500)}}
 				renderItem={({item,index}) => (
 					<View style={{borderRadius:10, flexDirection:"row", alignItems:"center", borderColor:"#DBDBDB", borderWidth:1, paddingHorizontal:"2%", paddingVertical:"4%", marginVertical:"1%"}} >
 						<Image source={{uri:item.image}} resizeMode={"stretch"} style={{width:horizontalScale(80), height:verticalScale(80), borderRadius:10}} />
@@ -140,6 +180,76 @@ const ViewSchedule = ({navigation, route }) => {
 					</View>
 				)}
 			/>
+      {
+        route.params.unApproved ?
+        <View style={styles.bottomView} >
+          <TouchableOpacity style={[styles.mainButton1,{marginTop:"6%", paddingVertical:"4%",}]} >
+            <Text style={styles.buttonText1}>{t("common:Reject")}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.mainButton} onPress={()=>setModalvisible(true)}>
+            <Text style={styles.buttonText}>{t("common:Accept")}</Text>
+          </TouchableOpacity>
+        </View>
+        :null
+      }
+      <Modal 
+          animationType="slide"
+          transparent={true}
+          visible={showModal}
+          onRequestClose={() => {
+            setModal(!showModal);
+          }}
+        >
+         <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <View
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => {setModal(!showModal);}}>
+              <MaterialCommunityIcons name='trash-can' size={moderateScale(30)} color={"#fff"} style={{backgroundColor:"#F94747", padding:"9%", borderRadius:40,alignSelf:"center"}} />
+              <Text style={{ marginTop:"15%", fontSize:15, fontWeight:"700", color:"#000",textAlign:"center"}}>{t("common:deleteSchedule")}</Text>
+              {/* <Text style={{ textAlign:"center", fontSize:15, fontWeight:"700",}}>Place added Successfully!</Text> */}
+            </View>
+            <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-evenly"}} >
+              <TouchableOpacity onPress={()=>setModal(!showModal)}  style={[styles.mainButton1, {backgroundColor:"#EAEAEA",paddingVertical:"6%", paddingHorizontal:"15%"}]} >
+                <Text style={[styles.buttonText1, {color:"#000"}]} >{t("common:No")}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={()=>{setModal(!showModal); ; deleteSchedule();}} style={[styles.mainButton1, {paddingVertical:"6%", paddingHorizontal:"15%"}]} >
+                <Text style={styles.buttonText1} >{t("common:Yes")}</Text>
+              </TouchableOpacity>
+              
+            </View>
+          </View>
+        </View>
+      </Modal>
+      <Modal 
+          animationType="slide"
+          transparent={true}
+          visible={Modalvisible}
+          onRequestClose={() => {
+            setModalvisible(!Modalvisible);
+          }}
+        >
+         <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <View
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => {setModalvisible(!Modalvisible);}}>
+              <MaterialCommunityIcons name='paperclip' size={moderateScale(30)} color={"#fff"} style={{backgroundColor:"#31B072", padding:"9%", borderRadius:40,alignSelf:"center"}} />
+              <Text style={{ marginTop:"15%", fontSize:15, fontWeight:"700", color:"#000",textAlign:"center"}}>{t("common:approveModal")}</Text>
+              {/* <Text style={{ textAlign:"center", fontSize:15, fontWeight:"700",}}>Place added Successfully!</Text> */}
+            </View>
+            <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-evenly"}} >
+              <TouchableOpacity onPress={()=>setModalvisible(!Modalvisible)}  style={[styles.mainButton1, {backgroundColor:"#EAEAEA",paddingVertical:"6%", paddingHorizontal:"15%"}]} >
+                <Text style={[styles.buttonText1, {color:"#000"}]} >{t("common:No")}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={()=>{setModalvisible(!Modalvisible); approveSchedule();}} style={[styles.mainButton1, {backgroundColor:"#1CE181",paddingVertical:"6%", paddingHorizontal:"15%"}]} >
+                <Text style={styles.buttonText1} >{t("common:Yes")}</Text>
+              </TouchableOpacity>
+              
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   )
 }
@@ -178,4 +288,42 @@ const styles = StyleSheet.create({
     color: "#101018",
     marginVertical:"2%"
 },
+centeredView: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor:"#0007",
+  // marginTop: 22,
+},
+modalView: {
+  margin: 20,
+  backgroundColor: 'white',
+  borderRadius: 20,
+  padding: 35,
+},
+mainButton1: {
+  backgroundColor:"#F94747", borderRadius:30, marginHorizontal:"1%",paddingHorizontal:"8%",
+  marginTop:"2%", paddingVertical:"1%", flexDirection:"row", alignItems:"center", justifyContent:"center"
+},
+buttonText1:{
+  fontFamily: 'DM Sans',
+  fontStyle: "normal",
+  fontWeight: "500",
+  fontSize: 16,
+  textAlign: "center",
+  color: "#fff",
+  marginVertical:"2%"
+},
+bottomView:{
+  flexDirection:"row",
+  alignItems:"center",
+  justifyContent:"space-evenly",
+  width:"110%",
+  backgroundColor:"#fff",
+  // marginHorizontal:"3%",
+  paddingHorizontal:"4%",
+  paddingVertical:"2%",
+  position:"absolute",
+  bottom:110
+}
 })

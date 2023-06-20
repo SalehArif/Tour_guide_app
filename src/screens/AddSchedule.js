@@ -35,6 +35,7 @@ const AddSchedule = ({navigation}) => {
 				image:`data:image/${image.type};base64,${image.base64}`,
 				city:city,
 				description:description,
+				type:"Suggested Schedule",
 				days:parseInt(days),
 				addedBy: auth().currentUser.uid
 			}
@@ -77,6 +78,7 @@ const AddSchedule = ({navigation}) => {
 					<>
 						<MaterialCommunityIcons name='file-image' size={30} color={"#333"}/>
 						<Text style={{marginTop:"8%"}} >{t("common:pic_upload")}</Text>
+						<Text style={{marginTop:"0%"}} >{t("common:max_size")}</Text>
 					</>
 			}
 			</TouchableOpacity>

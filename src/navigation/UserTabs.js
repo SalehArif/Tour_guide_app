@@ -1,3 +1,4 @@
+import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -13,10 +14,69 @@ import UserStack from './UserStack';
 import UserProfileStack from './UserProfileStack';
 import UserLikesStack from './UserLikesStack';
 import Notifications from '../screens/Notifications';
-
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import RNCalendarEvents from "react-native-calendar-events";
+import messaging from '@react-native-firebase/messaging';
 const Tab = createBottomTabNavigator();
 
+RNCalendarEvents.requestPermissions((readOnly = false));
+
 export default function UserTabs() {
+    const [calendar, setCalendar] = React.useState()
+    const getCalendarEvents = async ()=>{
+      let docs = []
+      firestore()
+      .collection("calendar")
+      .where("user","==", auth().currentUser.uid)
+      .get().then(querySnapshot => {
+        console.log('Total users: ', querySnapshot.size);
+        querySnapshot.forEach( documentSnapshot => {
+          documentSnapshot.data().id = documentSnapshot.id
+          docs.push(documentSnapshot.data())
+          // console.log('User ID: ', documentSnapshot.id, documentSnapshot.data());
+        });
+        setCalendar(docs)
+        getCalendarEventsDetails()
+        // console.log(docs)
+      })
+    }
+    
+    const getCalendarEventsDetails = async ()=>{
+      let details = {}, doc={}, docs = []
+      for (let i = 0; i < calendar.length; i++) {
+        details = await RNCalendarEvents.findEventById(calendar[i].eventId);
+        doc = { title:details.title, startDate:details.startDate, location:details.location, description:details.description, 
+          scheduleId: calendar[i].schedule, type:calendar[i].type, docId:calendar[i].id, eventId:calendar[i].eventId}
+        // console.log(doc)
+        docs.push(doc)
+      }
+      setCalendar(docs)
+      console.log(docs)
+    }
+
+    const addNotifToken = (token)=>{
+        firestore()
+        .collection("users")
+        .add({
+            isAdmin:false,
+            notifToken:token,
+            uid: auth().currentUser.uid
+        })
+        // .where("uid","==", auth().currentUser.uid)
+    }
+
+    React.useEffect(()=>{
+        (async ()=>{
+            await messaging().registerDeviceForRemoteMessages();
+            const token = await messaging().getToken();
+            addNotifToken(token)
+            console.log(token)
+        })()
+        getCalendarEvents()
+      }, [])
+    
+  
   return (
     <Tab.Navigator
     initialRouteName='Home'

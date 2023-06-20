@@ -41,6 +41,10 @@ const Profile = ({navigation}) => {
             <Text style={styles.buttonText}>{t("common:AddSchedule")}</Text>
             <FontAwesome name='angle-double-right' size={25} />
           </TouchableOpacity>
+          <TouchableOpacity style={styles.mainButton} onPress={()=>navigation.navigate("ApproveSchedules")}>
+            <Text style={styles.buttonText}>{t("common:approveBtn")}</Text>
+            <FontAwesome name='angle-double-right' size={25} />
+          </TouchableOpacity>
         </View>
     </View>
   )

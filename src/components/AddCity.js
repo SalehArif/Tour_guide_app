@@ -27,21 +27,26 @@ const AddCity = ({navigation}) => {
 
 	const addCityToDB = async ()=>{
 		setLoading(true)
-		const obj = {
-			image:`data:image/${image.type};base64,${image.base64}`,
-			city:city,
-			description:description,
-			addedBy: auth().currentUser.uid
+		if (image !== undefined && city !== "" && description !== ""){
+			const obj = {
+				image:`data:image/${image.type};base64,${image.base64}`,
+				city:city,
+				description:description,
+				addedBy: auth().currentUser.uid
+			}
+			try {
+				await firestore().collection("cities").add(obj)
+				resetFields();
+				ToastAndroid.showWithGravity("City Added Succesfully", ToastAndroid.SHORT, ToastAndroid.BOTTOM)	
+			} catch (error) {
+				console.log(error)
+				ToastAndroid.showWithGravity("City couldn't be added. You may have to select a different image", ToastAndroid.LONG, ToastAndroid.BOTTOM)
+				
+			}
+
 		}
-		try {
-			await firestore().collection("cities").add(obj)
-			resetFields();
-			ToastAndroid.showWithGravity("City Added Succesfully", ToastAndroid.SHORT, ToastAndroid.BOTTOM)	
-		} catch (error) {
-			console.log(error)
-			ToastAndroid.showWithGravity("City couldn't be added. You may have to select a different image", ToastAndroid.LONG, ToastAndroid.BOTTOM)
-			
-		}
+		else
+			ToastAndroid.showWithGravity("Fill in the required fields", ToastAndroid.LONG, ToastAndroid.BOTTOM)
 		setLoading(false)
 	}
 
@@ -64,6 +69,7 @@ const AddCity = ({navigation}) => {
 					<>
 						<MaterialCommunityIcons name='file-image' size={30} color={"#333"}/>
 						<Text style={{marginTop:"8%"}} >{t("common:pic_upload")}</Text>
+						<Text style={{marginTop:"0%"}} >{t("common:max_size")}</Text>
 					</>
 			}
 			</TouchableOpacity>
@@ -146,7 +152,7 @@ const styles = StyleSheet.create({
 	},
   mainButton: {
     borderWidth:1, borderColor:"#3CDD8E", backgroundColor:"#72F8B6", borderRadius:30, marginHorizontal:"1%",
-    marginTop:"6%", paddingVertical:"2%"
+    marginTop:"2%", paddingVertical:"2%"
   },
   buttonText:{
     fontFamily: 'DM Sans',

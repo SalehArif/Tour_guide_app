@@ -4,7 +4,7 @@ import DetailPage from '../screens/DetailPage';
 import UserLandingPage from '../screens/UserLandingPage';
 import UserSuggestedPrograms from '../screens/UserSuggestedPrograms';
 import ViewSchedule from '../screens/ViewSchedule';
-import CommunityProgram from '../screens/CommunityProgram';
+import CommunityProgram from '../screens/UserCommunityProgram';
 import PlacesToVisit from '../screens/PlacesToVisit';
 
 const Stack = createStackNavigator();

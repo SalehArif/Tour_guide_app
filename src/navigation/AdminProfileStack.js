@@ -6,6 +6,8 @@ import Settings from '../screens/Settings';
 import GuideManual from '../screens/GuideManual';
 import AddSchedule from '../screens/AddSchedule';
 import AddActivity from '../screens/AddActivity';
+import ApproveSchedules from '../screens/ApproveSchedules';
+import ViewSchedule from '../screens/ViewSchedule';
 
 const Stack = createStackNavigator();
 
@@ -18,6 +20,8 @@ const AdminProfileStack = () => {
         <Stack.Screen name="GuideManual" component={GuideManual} />
         <Stack.Screen name="AddSchedule" component={AddSchedule} />
         <Stack.Screen name="AddActivity" component={AddActivity} />
+        <Stack.Screen name="ApproveSchedules" component={ApproveSchedules} />
+        <Stack.Screen name="ViewSchedule" component={ViewSchedule} />
     </Stack.Navigator>
   )
 }
